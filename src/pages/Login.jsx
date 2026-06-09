@@ -82,13 +82,13 @@ export default function Login() {
           Don't have an account?{' '}
           <Link to="/register" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
         </Typography>
-        <Divider sx={{ my: 2.5 }} />
-        <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+        {/* <Divider sx={{ my: 2.5 }} /> */}
+        {/* <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
             <Shield size={14} /> Secured with Firebase Authentication
           </Typography>
           <Typography variant="caption" color="text.secondary">Register first if you don't have an account yet.</Typography>
-        </Box>
+        </Box> */}
       </Paper>
     </Box>
   );

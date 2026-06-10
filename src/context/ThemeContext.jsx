@@ -16,6 +16,7 @@ export function ThemeModeProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('logimove_theme', mode);
+    document.documentElement.setAttribute('data-theme', mode);
   }, [mode]);
 
   const toggleTheme = () => setMode(prev => (prev === 'light' ? 'dark' : 'light'));
@@ -61,6 +62,25 @@ export function ThemeModeProvider({ children }) {
           },
           MuiPaper: {
             styleOverrides: { root: { backgroundImage: 'none' } },
+          },
+          MuiInputBase: {
+            styleOverrides: {
+              input: {
+                '&::placeholder': { color: mode === 'dark' ? '#94a3b8' : '#9ca3af', opacity: 1 },
+              },
+            },
+          },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              notchedOutline: { borderColor: mode === 'dark' ? '#475569' : '#d1d5db' },
+            },
+          },
+          MuiTextField: {
+            styleOverrides: {
+              root: {
+                '& .MuiInputLabel-root': { color: mode === 'dark' ? '#94a3b8' : '#6b7280' },
+              },
+            },
           },
         },
       }),

@@ -3,18 +3,118 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import toast from 'react-hot-toast';
-import { fetchOrders, fetchDrivers, assignDriver } from '../firebase/services';
+import { fetchOrders, fetchDrivers, assignDriver, updateOrderStatus } from '../firebase/services';
 import StatusBadge from '../components/StatusBadge';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import { Eye, QrCode, X, MapPin, Package, User, Phone, CreditCard, Calendar, Navigation } from 'lucide-react';
+
+const QR_API = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=';
 
 function SortableItem({ id, children }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   return <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} className={`${isDragging ? 'opacity-50' : ''}`} {...attributes} {...listeners}>{children}</div>;
 }
 
+function OrderDetailDialog({ open, onClose, order, drivers }) {
+  if (!order) return null;
+  const driver = order.assignedDriver ? drivers.find(d => d.id === order.assignedDriver) : null;
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>Order Details — {order.id?.slice(0, 10)}</span>
+        <IconButton onClick={onClose} size="small"><X size={20} /></IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <StatusBadge status={order.status} />
+            <Chip label={order.paymentStatus || 'pending'} size="small" color={order.paymentStatus === 'paid' ? 'success' : 'warning'} variant="filled" sx={{ fontWeight: 600, textTransform: 'capitalize' }} />
+          </Box>
+
+          <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+            <Package size={16} /> Package Info
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, pl: 3 }}>
+            <Box><Typography variant="caption" color="text.secondary">Weight</Typography><Typography variant="body2" fontWeight={600}>{order.weight || 'N/A'} kg</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Vehicle</Typography><Typography variant="body2" fontWeight={600} sx={{ textTransform: 'capitalize' }}>{order.vehicleType || 'N/A'}</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Priority</Typography><Typography variant="body2" fontWeight={600} sx={{ textTransform: 'capitalize' }}>{order.priority || 'Standard'}</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Cost</Typography><Typography variant="body2" fontWeight={600}>₦{order.cost?.toLocaleString() || 'N/A'}</Typography></Box>
+          </Box>
+
+          <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+            <User size={16} /> Customer
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, pl: 3 }}>
+            <Box><Typography variant="caption" color="text.secondary">Name</Typography><Typography variant="body2" fontWeight={600}>{order.customer || order.senderName || 'N/A'}</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Email</Typography><Typography variant="body2" fontWeight={600}>{order.senderEmail || 'N/A'}</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Phone</Typography><Typography variant="body2" fontWeight={600}>{order.senderPhone || order.recipientPhone || 'N/A'}</Typography></Box>
+            <Box><Typography variant="caption" color="text.secondary">Recipient</Typography><Typography variant="body2" fontWeight={600}>{order.recipientName || 'N/A'}</Typography></Box>
+          </Box>
+
+          <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+            <MapPin size={16} /> Route
+          </Typography>
+          <Box sx={{ pl: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'success.main', flexShrink: 0 }} />
+              <Typography variant="body2">{order.origin || 'N/A'}</Typography>
+            </Box>
+            <Box sx={{ width: 1, height: 20, bgcolor: 'divider', ml: 0.5 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'error.main', flexShrink: 0 }} />
+              <Typography variant="body2">{order.destination || 'N/A'}</Typography>
+            </Box>
+          </Box>
+
+          {driver && (
+            <>
+              <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                <Navigation size={16} /> Assigned Driver
+              </Typography>
+              <Box sx={{ pl: 3 }}>
+                <Typography variant="body2" fontWeight={600}>{driver.name}</Typography>
+                <Typography variant="caption" color="text.secondary">{driver.phone} · {driver.email}</Typography>
+              </Box>
+            </>
+          )}
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+              <QrCode size={16} /> Scan to Track
+            </Typography>
+            <img src={`${QR_API}${encodeURIComponent(order.id)}`} alt={`QR for ${order.id}`} style={{ width: 140, height: 140, margin: '0 auto', borderRadius: 8 }} />
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>Order ID: {order.id}</Typography>
+          </Box>
+
+          {order.description && (
+            <Box><Typography variant="caption" color="text.secondary">Description:</Typography><Typography variant="body2">{order.description}</Typography></Box>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 export default function DriverAssignment() {
   const [orders, setOrders] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [pendingOrders, setPendingOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [qrOrder, setQrOrder] = useState(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -56,68 +156,124 @@ export default function DriverAssignment() {
   const getOrder = (id) => orders.find(o => o.id === id);
   const getDriverForOrder = (orderId) => { const o = getOrder(orderId); return o?.assignedDriver ? drivers.find(d => d.id === o.assignedDriver) : null; };
 
+  const openDetail = (order) => { setSelectedOrder(order); setDetailOpen(true); };
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between"><h1 className="text-2xl font-bold text-gray-900">Order Assignment</h1><p className="text-sm text-gray-500">Drag orders to assign them to drivers</p></div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="h4">Order Assignment</Typography>
+        <Typography variant="body2" color="text.secondary">Drag orders to assign them to drivers</Typography>
+      </Box>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <h3 className="font-semibold text-gray-900 mb-3">Unassigned Orders ({pendingOrders.length})</h3>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 3 }}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+              Unassigned Orders ({pendingOrders.length})
+            </Typography>
             <SortableContext items={pendingOrders} strategy={verticalListSortingStrategy}>
-              <div className="space-y-2">
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {pendingOrders.map(id => {
                   const order = getOrder(id);
                   if (!order) return null;
                   return (
                     <SortableItem key={id} id={id}>
-                      <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing">
-                        <div className="flex justify-between items-center"><span className="font-medium text-sm">{order.id}</span><StatusBadge status={order.status} /></div>
-                        <p className="text-xs text-gray-500 mt-1">{order.origin?.split(',')[0]} → {order.destination?.split(',')[0]}</p>
-                        <p className="text-xs text-gray-400">{order.customer} • ₦{order.cost?.toLocaleString()}</p>
-                      </div>
+                      <Box
+                        sx={{
+                          p: 1.5, borderRadius: 2, cursor: 'grab', border: '1px solid',
+                          borderColor: 'divider', bgcolor: 'grey.50',
+                          '&:hover': { borderColor: 'primary.main' },
+                          '&:active': { cursor: 'grabbing' },
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="body2" fontWeight={600}>{order.id}</Typography>
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            <StatusBadge status={order.status} />
+                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); openDetail(order); }} sx={{ width: 24, height: 24 }}>
+                              <Eye size={14} />
+                            </IconButton>
+                          </Box>
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                          {order.origin?.split(',')[0]} → {order.destination?.split(',')[0]}
+                        </Typography>
+                        <Typography variant="caption" color="text.disabled">
+                          {order.customer} • ₦{order.cost?.toLocaleString()}
+                        </Typography>
+                      </Box>
                     </SortableItem>
                   );
                 })}
-                {pendingOrders.length === 0 && <p className="text-sm text-gray-400 text-center py-8">All orders assigned</p>}
-              </div>
+                {pendingOrders.length === 0 && (
+                  <Typography variant="body2" color="text.disabled" sx={{ textAlign: 'center', py: 4 }}>All orders assigned</Typography>
+                )}
+              </Box>
             </SortableContext>
-          </div>
+          </Paper>
 
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Available Drivers</h3>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Available Drivers</Typography>
             {drivers.filter(d => d.status === 'available').map(driver => (
               <SortableContext key={driver.id} items={[driver.id]}>
-                <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">{driver.name.charAt(0)}</div>
-                      <div><p className="font-medium text-sm">{driver.name}</p><p className="text-xs text-gray-500">{driver.id} • ⭐ {driver.rating}</p></div>
-                    </div>
+                <Paper sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700 }}>
+                        {driver.name?.charAt(0)}
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>{driver.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">{driver.id?.slice(0, 8)} • ⭐ {driver.rating}</Typography>
+                      </Box>
+                    </Box>
                     <SortableItem key={driver.id} id={driver.id}>
-                      <div className="px-3 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-200 cursor-grab active:cursor-grabbing">Drop here</div>
+                      <Box sx={{ px: 1.5, py: 0.75, bgcolor: 'primary.main', color: 'white', borderRadius: 1.5, fontSize: '0.75rem', cursor: 'grab', '&:active': { cursor: 'grabbing' } }}>
+                        Drop here
+                      </Box>
                     </SortableItem>
-                  </div>
-                  <p className="text-xs text-gray-400">{driver.totalDeliveries} deliveries • ₦{driver.earnings?.toLocaleString()} earned</p>
-                </div>
+                  </Box>
+                  <Typography variant="caption" color="text.disabled">
+                    {driver.totalDeliveries} deliveries • ₦{driver.earnings?.toLocaleString()} earned
+                  </Typography>
+                </Paper>
               </SortableContext>
             ))}
-            {drivers.filter(d => d.status === 'available').length === 0 && <p className="text-sm text-gray-400 text-center py-8 bg-white rounded-xl border border-gray-200">No available drivers</p>}
+            {drivers.filter(d => d.status === 'available').length === 0 && (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.disabled">No available drivers</Typography>
+              </Paper>
+            )}
 
-            <h3 className="font-semibold text-gray-900 pt-2">Assigned Deliveries</h3>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 1 }}>Assigned Deliveries</Typography>
             {orders.filter(o => o.assignedDriver).map(order => {
               const driver = getDriverForOrder(order.id);
               return (
-                <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                  <div className="flex justify-between items-center"><span className="font-medium text-sm">{order.id}</span><StatusBadge status={order.status} /></div>
-                  <p className="text-xs text-gray-500 mt-1">{order.origin?.split(',')[0]} → {order.destination?.split(',')[0]}</p>
-                  <div className="flex items-center gap-2 mt-2"><span className="text-xs text-gray-400">Driver:</span><span className="text-xs font-medium text-blue-600">{driver?.name || 'N/A'}</span></div>
-                </div>
+                <Paper key={order.id} sx={{ p: 1.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2" fontWeight={600}>{order.id?.slice(0, 10)}</Typography>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <StatusBadge status={order.status} />
+                      <IconButton size="small" onClick={() => openDetail(order)} sx={{ width: 24, height: 24 }}>
+                        <Eye size={14} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                    {order.origin?.split(',')[0]} → {order.destination?.split(',')[0]}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Typography variant="caption" color="text.disabled">Driver:</Typography>
+                    <Typography variant="caption" color="primary" fontWeight={600}>{driver?.name || 'N/A'}</Typography>
+                  </Box>
+                </Paper>
               );
             })}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </DndContext>
-    </div>
+
+      <OrderDetailDialog open={detailOpen} onClose={() => setDetailOpen(false)} order={selectedOrder} drivers={drivers} />
+    </Box>
   );
 }

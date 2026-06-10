@@ -5,6 +5,87 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; scroll-behavior: smooth; }
 }
 
+[data-theme="dark"] .dashboard-layout {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: #334155;
+  --border-light: #475569;
+}
+
+[data-theme="dark"] .dashboard-layout .text-gray-900,
+[data-theme="dark"] .dashboard-layout .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+[data-theme="dark"] .dashboard-layout .text-gray-700 {
+  color: var(--text-primary) !important;
+}
+[data-theme="dark"] .dashboard-layout .text-gray-600,
+[data-theme="dark"] .dashboard-layout .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+[data-theme="dark"] .dashboard-layout .text-gray-400 {
+  color: var(--text-muted) !important;
+}
+[data-theme="dark"] .dashboard-layout .bg-white {
+  background-color: var(--bg-card) !important;
+}
+[data-theme="dark"] .dashboard-layout .bg-gray-50,
+[data-theme="dark"] .dashboard-layout .bg-gray-100 {
+  background-color: var(--bg-secondary) !important;
+}
+[data-theme="dark"] .dashboard-layout .border-gray-100,
+[data-theme="dark"] .dashboard-layout .border-gray-200,
+[data-theme="dark"] .dashboard-layout .border-gray-300 {
+  border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .dashboard-layout .hover\:border-blue-100:hover {
+  border-color: #1e40af !important;
+}
+[data-theme="dark"] .dashboard-layout .bg-blue-50 {
+  background-color: #1e3a5f !important;
+}
+[data-theme="dark"] .dashboard-layout .text-blue-700 {
+  color: #93c5fd !important;
+}
+[data-theme="dark"] .dashboard-layout .border-blue-200 {
+  border-color: #1e40af !important;
+}
+[data-theme="dark"] .dashboard-layout .bg-green-50 {
+  background-color: #14532d !important;
+}
+[data-theme="dark"] .dashboard-layout .text-green-800 {
+  color: #86efac !important;
+}
+[data-theme="dark"] .dashboard-layout .text-green-600 {
+  color: #4ade80 !important;
+}
+[data-theme="dark"] .dashboard-layout .border-green-200 {
+  border-color: #166534 !important;
+}
+[data-theme="dark"] .dashboard-layout input,
+[data-theme="dark"] .dashboard-layout select,
+[data-theme="dark"] .dashboard-layout textarea {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+[data-theme="dark"] .dashboard-layout input::placeholder,
+[data-theme="dark"] .dashboard-layout textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+[data-theme="dark"] .dashboard-layout select option {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+[data-theme="dark"] .dashboard-layout .divide-gray-100 > * + * {
+  border-color: var(--border-color) !important;
+}
+
 @keyframes slowZoom {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
@@ -14,3 +95,45 @@
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes driveLeft {
+  0% { transform: translateX(120%); }
+  100% { transform: translateX(-120%); }
+}
+
+@keyframes driveRight {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes bounceTruck {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-4px) translateX(4px); }
+  50% { transform: translateY(0) translateX(0); }
+  75% { transform: translateY(-4px) translateX(-4px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.6); }
+}
+
+@keyframes trailFade {
+  0% { opacity: 0.6; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(0.3); }
+}
+
+.vehicle-animation-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.vehicle-bike { animation: driveRight 8s linear infinite; }
+.vehicle-car { animation: driveLeft 10s linear infinite; }
+.vehicle-van { animation: driveRight 12s linear infinite; }
+.vehicle-plane { animation: driveLeft 14s linear infinite; }

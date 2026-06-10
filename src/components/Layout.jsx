@@ -9,7 +9,7 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default' }}>
+    <Box className="dashboard-layout" sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default' }}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Navbar onMenuClick={() => setSidebarOpen(true)} />

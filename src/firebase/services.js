@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -21,7 +22,7 @@ import {
   onSnapshot,
   arrayUnion,
 } from 'firebase/firestore';
-import { auth, db } from './config';
+import { auth, db, googleProvider } from './config';
 
 /* ───────── Auth ───────── */
 
@@ -65,6 +66,20 @@ export async function registerUser(name, email, password) {
   const profile = { name, email, role: 'customer', phone: '', isActive: true, createdAt: new Date().toISOString() };
   await setDoc(doc(db, 'users', user.uid), profile);
   return { userId: user.uid, name, email, role: 'customer', token: null };
+}
+
+export async function signInWithGoogle() {
+  const result = await signInWithPopup(auth, googleProvider);
+  const user = result.user;
+  let userDoc = await getDoc(doc(db, 'users', user.uid));
+  if (!userDoc.exists()) {
+    const newProfile = { name: user.displayName || user.email?.split('@')[0] || 'User', email: user.email, role: 'customer', phone: '', isActive: true, createdAt: new Date().toISOString() };
+    await setDoc(doc(db, 'users', user.uid), newProfile);
+    userDoc = await getDoc(doc(db, 'users', user.uid));
+  }
+  const profile = userDoc.data();
+  const role = user.email === 'bigsmart2026@gmail.com' ? 'admin' : (profile.role || 'customer');
+  return { userId: user.uid, name: profile.name || user.displayName || user.email?.split('@')[0], email: user.email, role, phone: profile.phone || '', token: null };
 }
 
 export async function logoutUser() {

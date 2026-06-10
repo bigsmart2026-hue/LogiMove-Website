@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useThemeMode } from '../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 import hero1 from '../assets/hero1.jpg';
 import hero2 from '../assets/hero2.jpg';
 import hero3 from '../assets/hero3.jpg';
@@ -78,6 +80,7 @@ const services = [
 export default function LandingPage() {
   const scrollY = useScrollPosition();
   const navigate = useNavigate();
+  const { toggleTheme, mode } = useThemeMode();
   const isScrolled = scrollY > 60;
   const [heroIdx, setHeroIdx] = useState(0);
 
@@ -101,6 +104,13 @@ export default function LandingPage() {
             <Link to="/about" className={`text-sm font-medium transition-colors duration-300 hover:text-blue-400 ${isScrolled ? 'text-gray-700' : 'text-white/90'}`}>About</Link>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl transition-all duration-300 ${isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white/80 hover:bg-white/10'}`}
+              title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
             <Link to="/login" className={`px-5 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${isScrolled ? 'text-blue-600 hover:bg-blue-50' : 'text-white hover:bg-white/10'}`}>Sign In</Link>
             <Link to="/register" className="px-5 py-2 text-sm font-medium rounded-xl bg-white text-blue-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">Get Started</Link>
           </div>
@@ -218,6 +228,98 @@ export default function LandingPage() {
                 </div>
               </AnimatedSection>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Animated Fleet Section */}
+      <section className="py-24 bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-blue-400 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-400 rounded-full blur-3xl" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection className="text-center mb-16">
+            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Our Fleet In Motion</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-3">Delivering Across Nigeria</h2>
+            <p className="text-gray-500 mt-4 max-w-xl mx-auto">From busy city streets to cross-country highways, our fleet never stops moving.</p>
+          </AnimatedSection>
+
+          <div className="relative h-[500px] sm:h-[600px] bg-gradient-to-b from-blue-900/5 via-indigo-900/10 to-blue-900/5 rounded-3xl border border-blue-200/30 overflow-hidden shadow-2xl">
+            {/* Road */}
+            <div className="absolute bottom-16 left-0 right-0 h-32">
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700" />
+              <div className="absolute bottom-8 left-0 right-0 h-1 bg-yellow-400/60" />
+              {/* Road dashes */}
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/30" style={{ backgroundImage: 'repeating-linear-gradient(90deg, white 0px, white 30px, transparent 30px, transparent 60px)', backgroundSize: '60px 100%' }} />
+            </div>
+
+            {/* Sky background */}
+            <div className="absolute top-0 left-0 right-0 bottom-32 bg-gradient-to-b from-blue-400/20 via-indigo-300/10 to-transparent" />
+
+            {/* Clouds */}
+            <div className="absolute top-8 left-[10%] text-4xl opacity-20 animate-pulse">☁️</div>
+            <div className="absolute top-16 left-[60%] text-5xl opacity-15 animate-pulse" style={{ animationDelay: '1s' }}>☁️</div>
+            <div className="absolute top-4 left-[35%] text-3xl opacity-10" style={{ animationDelay: '2s' }}>☁️</div>
+
+            {/* City buildings silhouette */}
+            <div className="absolute bottom-48 left-0 right-0 flex items-end gap-1 px-4">
+              {[40, 60, 35, 80, 50, 70, 45, 90, 55, 65, 30, 75, 50, 85, 42, 68, 52, 78, 62, 88, 48, 72, 58, 82, 44, 66, 38, 76, 54, 70, 46, 84, 56, 92, 50].map((h, i) => (
+                <div key={i} className="flex-1 bg-gradient-to-t from-gray-700/80 to-gray-600/60 rounded-t-sm" style={{ height: `${h}px`, maxWidth: '14px' }} />
+              ))}
+            </div>
+
+            {/* Plane */}
+            <div className="vehicle-plane absolute top-12 text-5xl z-10" style={{ animationDuration: '14s' }}>
+              <div className="relative">
+                <span className="relative z-10 drop-shadow-lg">✈️</span>
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-sm" />
+              </div>
+            </div>
+
+            {/* Bike */}
+            <div className="vehicle-bike absolute bottom-52 text-4xl z-20" style={{ animationDuration: '8s' }}>
+              <div className="relative">
+                <span className="relative z-10 drop-shadow-lg">🏍️</span>
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent blur-sm" />
+                <span className="absolute -top-3 left-1/2 text-xs text-orange-500 font-bold animate-pulse">📦</span>
+              </div>
+            </div>
+
+            {/* Car */}
+            <div className="vehicle-car absolute bottom-36 text-5xl z-20" style={{ animationDuration: '10s' }}>
+              <div className="relative">
+                <span className="relative z-10 drop-shadow-lg">🚗</span>
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-14 h-1 bg-gradient-to-r from-transparent via-blue-400/50 to-transparent blur-sm" />
+                <span className="absolute -top-2 -right-1 text-lg">💨</span>
+              </div>
+            </div>
+
+            {/* Van */}
+            <div className="vehicle-van absolute bottom-24 text-5xl z-20" style={{ animationDuration: '12s' }}>
+              <div className="relative">
+                <span className="relative z-10 drop-shadow-lg">🚐</span>
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-green-400/50 to-transparent blur-sm" />
+                <span className="absolute -top-3 left-0 text-lg">📦📦</span>
+              </div>
+            </div>
+
+            {/* Stars/particles */}
+            <div className="absolute top-0 left-0 right-0 h-32">
+              {[...Array(15)].map((_, i) => (
+                <div key={i} className="absolute w-1 h-1 bg-white rounded-full animate-ping" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${i * 0.3}s`, animationDuration: `${2 + Math.random() * 3}s`, opacity: 0.3 }} />
+              ))}
+            </div>
+
+            {/* Ground details */}
+            <div className="absolute bottom-12 left-4 text-xs text-gray-500 font-mono">🚦 GPS · ETA Optimized</div>
+            <div className="absolute bottom-12 right-4 text-xs text-gray-500 font-mono">📊 98% On-Time Rate</div>
+          </div>
+
+          <div className="text-center mt-8">
+            <AnimatedSection>
+              <p className="text-gray-500 text-sm">Real-time fleet monitoring · AI-optimized routes · 500+ vehicles nationwide</p>
+            </AnimatedSection>
           </div>
         </div>
       </section>

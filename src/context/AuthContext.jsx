@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthChange, loginUser, registerUser, logoutUser, resetPassword } from '../firebase/services';
+import { onAuthChange, loginUser, registerUser, logoutUser, resetPassword, signInWithGoogle } from '../firebase/services';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -60,13 +60,27 @@ export function AuthProvider({ children }) {
     toast.success('Logged out');
   };
 
+  const googleLogin = async () => {
+    try {
+      const authUser = await signInWithGoogle();
+      setUser(authUser);
+      toast.success('Signed in with Google!');
+      return authUser;
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        toast.error(err.message);
+      }
+      throw err;
+    }
+  };
+
   const forgotPassword = async (email) => {
     await resetPassword(email);
     toast.success('Password reset email sent! Check your inbox.');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, forgotPassword, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, forgotPassword, googleLogin, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -7,6 +7,10 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
   const polylineRef = useRef(null);
   const resizeObserverRef = useRef(null);
 
+  const invalidate = () => {
+    if (mapInstance.current) mapInstance.current.invalidateSize();
+  };
+
   useEffect(() => {
     let cleanup = false;
     import('leaflet/dist/leaflet.css').then(() => import('leaflet')).then((L) => {
@@ -15,14 +19,12 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }).addTo(map);
       mapInstance.current = map;
 
-      // Fix overlapping tiles by invalidating size after render
-      setTimeout(() => map.invalidateSize(), 300);
+      // Invalidate multiple times to ensure tiles render at correct size
+      [100, 300, 600, 1000].forEach(ms => setTimeout(invalidate, ms));
 
-      // Watch container resizes (critical for responsive layouts)
+      // Watch container resizes (critical for responsive/mobile layouts)
       if (mapRef.current) {
-        resizeObserverRef.current = new ResizeObserver(() => {
-          if (mapInstance.current) mapInstance.current.invalidateSize();
-        });
+        resizeObserverRef.current = new ResizeObserver(invalidate);
         resizeObserverRef.current.observe(mapRef.current);
       }
     });
@@ -35,6 +37,7 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
 
   useEffect(() => {
     if (!mapInstance.current) return;
+    invalidate();
     import('leaflet').then((L) => {
       markersRef.current.forEach(m => mapInstance.current?.removeLayer(m));
       markersRef.current = [];
@@ -48,7 +51,7 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
 
   useEffect(() => {
     if (!mapInstance.current) return;
-    setTimeout(() => mapInstance.current?.invalidateSize(), 100);
+    invalidate();
     import('leaflet').then((L) => {
       if (polylineRef.current) { mapInstance.current.removeLayer(polylineRef.current); polylineRef.current = null; }
       if (polyline?.length > 1) {

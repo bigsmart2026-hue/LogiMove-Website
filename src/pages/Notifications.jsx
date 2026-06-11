@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import { fetchOrders, fetchNotifications, updateOrder, addActivityLog } from '../firebase/services';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -11,6 +12,7 @@ import { Bell, Package, CreditCard, Truck, RefreshCw, CheckCheck } from 'lucide-
 const typeIcons = { status_update: Package, payment: CreditCard, default: Truck };
 
 export default function Notifications() {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -71,7 +73,9 @@ export default function Notifications() {
           {unread > 0 && <Badge badgeContent={unread} color="primary" />}
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={simulateUpdate} size="small">Simulate Update</Button>
+          {user?.role === 'admin' && (
+            <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={simulateUpdate} size="small">Simulate Update</Button>
+          )}
           <Button variant="outlined" startIcon={<CheckCheck size={16} />} onClick={markAllRead} size="small">Mark All Read</Button>
         </Box>
       </Box>

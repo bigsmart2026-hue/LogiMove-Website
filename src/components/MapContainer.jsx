@@ -5,6 +5,7 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
   const mapInstance = useRef(null);
   const markersRef = useRef([]);
   const polylineRef = useRef(null);
+  const resizeObserverRef = useRef(null);
 
   useEffect(() => {
     let cleanup = false;
@@ -13,8 +14,23 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
       const map = L.map(mapRef.current, { zoomControl: true }).setView(center, zoom);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }).addTo(map);
       mapInstance.current = map;
+
+      // Fix overlapping tiles by invalidating size after render
+      setTimeout(() => map.invalidateSize(), 300);
+
+      // Watch container resizes (critical for responsive layouts)
+      if (mapRef.current) {
+        resizeObserverRef.current = new ResizeObserver(() => {
+          if (mapInstance.current) mapInstance.current.invalidateSize();
+        });
+        resizeObserverRef.current.observe(mapRef.current);
+      }
     });
-    return () => { cleanup = true; if (mapInstance.current) { mapInstance.current.remove(); mapInstance.current = null; } };
+    return () => {
+      cleanup = true;
+      if (resizeObserverRef.current) resizeObserverRef.current.disconnect();
+      if (mapInstance.current) { mapInstance.current.remove(); mapInstance.current = null; }
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -32,6 +48,7 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
 
   useEffect(() => {
     if (!mapInstance.current) return;
+    setTimeout(() => mapInstance.current?.invalidateSize(), 100);
     import('leaflet').then((L) => {
       if (polylineRef.current) { mapInstance.current.removeLayer(polylineRef.current); polylineRef.current = null; }
       if (polyline?.length > 1) {

@@ -11,10 +11,10 @@ const milestones = [
 ];
 
 const team = [
-  { name: 'Chidi Okonkwo', role: 'CEO & Founder', initials: 'CO' },
-  { name: 'Amina Bello', role: 'CTO', initials: 'AB' },
-  { name: 'Femi Adeyemi', role: 'Head of Operations', initials: 'FA' },
-  { name: 'Ngozi Eze', role: 'VP of Engineering', initials: 'NE' },
+  { name: 'Big S-code', role: 'CEO & Founder', initials: 'CO' },
+  { name: 'Emmanuel Noyerem', role: 'CTO', initials: 'AB' },
+  { name: 'Jane Nwadike', role: 'Head of Operations', initials: 'FA' },
+  { name: 'Abuoma David', role: 'VP of Engineering', initials: 'NE' },
 ];
 
 const values = [

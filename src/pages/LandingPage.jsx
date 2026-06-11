@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../context/ThemeContext';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Truck, Package, BarChart3, Users, Warehouse, ShieldCheck, Zap, Bike, Car, Plane } from 'lucide-react';
 import hero1 from '../assets/hero1.jpg';
 import hero2 from '../assets/hero2.jpg';
 import hero3 from '../assets/hero3.jpg';
+import heroPng from '../assets/hero.png';
 
 const heroImages = [hero1, hero2, hero3];
 
@@ -62,20 +63,77 @@ function Counter({ end, suffix = '', duration = 2000 }) {
 }
 
 const features = [
-  { icon: '🚚', title: 'Real-Time Tracking', desc: 'Track your packages in real-time with live GPS updates and accurate ETAs.' },
-  { icon: '📦', title: 'Smart Booking', desc: 'Multi-step booking form with instant cost calculation and multiple payment options.' },
-  { icon: '📊', title: 'Analytics Dashboard', desc: 'Comprehensive analytics with revenue charts, order stats, and performance metrics.' },
-  { icon: '👥', title: 'Driver Management', desc: 'Assign orders via drag-and-drop, track driver performance and earnings.' },
-  { icon: '🏭', title: 'Warehouse Ops', desc: 'Manage warehouses, track inventory levels, and optimize storage across hubs.' },
-  { icon: '🔒', title: 'Secure Platform', desc: 'Role-based access control, simulated 2FA, and activity logging for security.' },
+  { icon: Truck, title: 'Real-Time Tracking', desc: 'Track your packages in real-time with live GPS updates and accurate ETAs.' },
+  { icon: Package, title: 'Smart Booking', desc: 'Multi-step booking form with instant cost calculation and multiple payment options.' },
+  { icon: BarChart3, title: 'Analytics Dashboard', desc: 'Comprehensive analytics with revenue charts, order stats, and performance metrics.' },
+  { icon: Users, title: 'Driver Management', desc: 'Assign orders via drag-and-drop, track driver performance and earnings.' },
+  { icon: Warehouse, title: 'Warehouse Ops', desc: 'Manage warehouses, track inventory levels, and optimize storage across hubs.' },
+  { icon: ShieldCheck, title: 'Secure Platform', desc: 'Role-based access control, simulated 2FA, and activity logging for security.' },
 ];
 
 const services = [
-  { icon: '🛵', title: 'Bike Dispatch', desc: 'Fast last-mile delivery within city limits using our bike fleet.' },
-  { icon: '🚐', title: 'Van Delivery', desc: 'Medium-sized cargo delivery for businesses and bulk shipments.' },
-  { icon: '🚛', title: 'Truck Haulage', desc: 'Heavy cargo and inter-state logistics with real-time tracking.' },
-  { icon: '✈️', title: 'Express Shipping', desc: 'Priority handling with expedited delivery timelines.' },
+  { icon: Bike, title: 'Bike Dispatch', desc: 'Fast last-mile delivery within city limits using our bike fleet.' },
+  { icon: Car, title: 'Van Delivery', desc: 'Medium-sized cargo delivery for businesses and bulk shipments.' },
+  { icon: Truck, title: 'Truck Haulage', desc: 'Heavy cargo and inter-state logistics with real-time tracking.' },
+  { icon: Plane, title: 'Express Shipping', desc: 'Priority handling with expedited delivery timelines.' },
 ];
+
+const vehicleSvgs = [
+  <svg key="car" viewBox="0 0 160 90" width="160" height="90" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <path d="M20 62c0-8.8 7.2-16 16-16h2l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12h2c8.8 0 16 7.2 16 16v10c0 5-4 9-9 9H29c-5 0-9-4-9-9v-10z" fill="#2563eb" />
+    <path d="M42 46l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12H42z" fill="#1d4ed8" opacity="0.6" />
+    <rect x="35" y="42" width="90" height="14" rx="3" fill="#3b82f6" opacity="0.4" />
+    <circle cx="46" cy="66" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2" />
+    <circle cx="46" cy="66" r="6" fill="#64748b" />
+    <circle cx="114" cy="66" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2" />
+    <circle cx="114" cy="66" r="6" fill="#64748b" />
+    <rect x="70" y="38" width="20" height="8" rx="3" fill="#93c5fd" opacity="0.5" />
+    <circle cx="46" cy="66" r="2.5" fill="#e2e8f0" />
+    <circle cx="114" cy="66" r="2.5" fill="#e2e8f0" />
+    <rect x="30" y="56" width="6" height="8" rx="1" fill="#fbbf24" opacity="0.9" />
+    <rect x="124" y="56" width="6" height="8" rx="1" fill="#ef4444" opacity="0.9" />
+  </svg>,
+  <svg key="van" viewBox="0 0 200 100" width="200" height="100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <rect x="15" y="38" width="170" height="40" rx="4" fill="#7c3aed" />
+    <rect x="95" y="20" width="80" height="56" rx="4" fill="#8b5cf6" />
+    <path d="M95 20l-20 18h100l-20-18H95z" fill="#6d28d9" />
+    <rect x="100" y="26" width="70" height="26" rx="2" fill="#a78bfa" opacity="0.4" />
+    <rect x="180" y="44" width="8" height="28" rx="2" fill="#8b5cf6" />
+    <circle cx="52" cy="72" r="15" fill="#1e293b" stroke="#334155" strokeWidth="2.5" />
+    <circle cx="52" cy="72" r="6.5" fill="#64748b" />
+    <circle cx="148" cy="72" r="15" fill="#1e293b" stroke="#334155" strokeWidth="2.5" />
+    <circle cx="148" cy="72" r="6.5" fill="#64748b" />
+    <circle cx="52" cy="72" r="3" fill="#e2e8f0" />
+    <circle cx="148" cy="72" r="3" fill="#e2e8f0" />
+    <rect x="12" y="52" width="6" height="8" rx="1" fill="#fbbf24" />
+    <rect x="183" y="52" width="6" height="8" rx="1" fill="#ef4444" />
+  </svg>,
+  <svg key="bike" viewBox="0 0 120 80" width="120" height="80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <circle cx="30" cy="62" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2.5" />
+    <circle cx="30" cy="62" r="6" fill="#64748b" />
+    <circle cx="90" cy="62" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2.5" />
+    <circle cx="90" cy="62" r="6" fill="#64748b" />
+    <line x1="30" y1="48" x2="90" y2="48" stroke="#475569" strokeWidth="4" strokeLinecap="round" />
+    <line x1="30" y1="48" x2="60" y2="18" stroke="#475569" strokeWidth="4" strokeLinecap="round" />
+    <line x1="60" y1="18" x2="82" y2="38" stroke="#475569" strokeWidth="3" strokeLinecap="round" />
+    <line x1="50" y1="38" x2="70" y2="28" stroke="#334155" strokeWidth="2" />
+    <line x1="60" y1="18" x2="60" y2="48" stroke="#334155" strokeWidth="3" />
+    <line x1="60" y1="18" x2="55" y2="12" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
+    <rect x="55" y="8" width="10" height="6" rx="2" fill="#3b82f6" />
+    <circle cx="96" cy="48" r="3" fill="#ef4444" />
+    <rect x="96" y="46" width="8" height="8" rx="1" fill="#f59e0b" opacity="0.8" />
+  </svg>,
+  <svg key="plane" viewBox="0 0 200 70" width="200" height="70" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <path d="M195 47l-45-5-25-15-35-10v12l25 8v6l-15 4H75l-25-8H20l10 8-10 8h30l25-8h25l15 4v6l-25 8 35-10 45-5z" fill="#94a3b8" />
+    <path d="M120 35l-10-5v8l10-3z" fill="#64748b" />
+    <line x1="90" y1="28" x2="90" y2="45" stroke="#475569" strokeWidth="1.5" />
+    <line x1="75" y1="38" x2="95" y2="38" stroke="#475569" strokeWidth="1" />
+    <circle cx="185" cy="47" r="3" fill="#ef4444" />
+    <circle cx="178" cy="47" r="2" fill="#fbbf24" />
+  </svg>,
+];
+
+const vehicleLabels = ['Car', 'Van', 'Bike', 'Plane'];
 
 export default function LandingPage() {
   const scrollY = useScrollPosition();
@@ -83,35 +141,50 @@ export default function LandingPage() {
   const { toggleTheme, mode } = useThemeMode();
   const isScrolled = scrollY > 60;
   const [heroIdx, setHeroIdx] = useState(0);
+  const [activeService, setActiveService] = useState(0);
+  const serviceRefs = useRef([]);
 
   useEffect(() => {
     const timer = setInterval(() => setHeroIdx(i => (i + 1) % heroImages.length), 5000);
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = Number(entry.target.dataset.index);
+          if (!isNaN(idx)) setActiveService(idx);
+        }
+      });
+    }, { threshold: 0.4, rootMargin: '-80px 0px' });
+    serviceRefs.current.forEach(ref => ref && observer.observe(ref));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="landing-page min-h-screen bg-white overflow-x-hidden">
       {/* Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/20 backdrop-blur-xl border-b border-white/30 shadow-lg py-3' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <Link to="/" className={`text-2xl font-bold tracking-tight transition-colors duration-500 ${isScrolled ? 'text-blue-600' : 'text-white'}`}>
-            <span className="text-3xl">📦</span> LogiMove
+          <Link to="/" className={`text-2xl font-bold tracking-tight transition-colors duration-500 flex items-center gap-1.5 ${isScrolled ? 'text-blue-600' : 'text-white'}`}>
+            <Package size={24} /> LogiMove
           </Link>
           <div className="hidden md:flex items-center gap-8">
             {['Features', 'Services'].map(item => (
-              <a key={item} href={`#${item.toLowerCase()}`} className={`text-sm font-medium transition-colors duration-300 hover:text-blue-400 ${isScrolled ? 'text-gray-700' : 'text-white/90'}`}>{item}</a>
+              <a key={item} href={`#${item.toLowerCase()}`} className={`text-sm font-medium transition-colors duration-300 hover:text-blue-400 ${isScrolled ? 'text-gray-800' : 'text-white/90'}`}>{item}</a>
             ))}
-            <Link to="/about" className={`text-sm font-medium transition-colors duration-300 hover:text-blue-400 ${isScrolled ? 'text-gray-700' : 'text-white/90'}`}>About</Link>
+            <Link to="/about" className={`text-sm font-medium transition-colors duration-300 hover:text-blue-400 ${isScrolled ? 'text-gray-800' : 'text-white/90'}`}>About</Link>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-xl transition-all duration-300 ${isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white/80 hover:bg-white/10'}`}
+              className={`p-2 rounded-xl transition-all duration-300 ${isScrolled ? 'text-gray-800 hover:bg-white/20' : 'text-white/80 hover:bg-white/10'}`}
               title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
               {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
-            <Link to="/login" className={`px-5 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${isScrolled ? 'text-blue-600 hover:bg-blue-50' : 'text-white hover:bg-white/10'}`}>Sign In</Link>
+            <Link to="/login" className={`px-5 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${isScrolled ? 'text-blue-600 hover:bg-white/20' : 'text-white hover:bg-white/10'}`}>Sign In</Link>
             <Link to="/register" className="px-5 py-2 text-sm font-medium rounded-xl bg-white text-blue-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">Get Started</Link>
           </div>
         </div>
@@ -135,7 +208,7 @@ export default function LandingPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
           <div className="max-w-3xl">
             <div className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-sm font-medium mb-6 animate-[fadeInUp_0.6s_ease-out]">
-              ⚡ Trusted by 500+ businesses across Nigeria
+              <Zap size={16} className="inline" /> Trusted by 500+ businesses across Nigeria
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6 animate-[fadeInUp_0.6s_ease-out_0.1s_both]">
               Smart Logistics
@@ -150,9 +223,6 @@ export default function LandingPage() {
               <button onClick={() => navigate('/register')} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-2xl shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-300 text-lg">
                 Start Free Trial
               </button>
-              {/* <button onClick={() => navigate('/login')} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 text-lg">
-                Watch Demo →
-              </button> */}
             </div>
             <div className="flex items-center gap-6 mt-10 animate-[fadeInUp_0.6s_ease-out_0.4s_both]">
               <div className="flex -space-x-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">JD</div><div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">SM</div><div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">AM</div><div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">+</div></div>
@@ -175,15 +245,20 @@ export default function LandingPage() {
             <p className="text-gray-500 mt-4 max-w-xl mx-auto">A comprehensive logistics platform with powerful tools for every aspect of your delivery operations.</p>
           </AnimatedSection>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((f, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition-transform duration-500">{f.icon}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{f.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
+            {features.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <AnimatedSection key={i} delay={i * 100}>
+                  <div className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500">
+                      <Icon size={28} className="text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{f.title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+                  </div>
+                </AnimatedSection>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -211,122 +286,58 @@ export default function LandingPage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-16">
-            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Our Services</span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-3">Delivery Solutions</h2>
-            <p className="text-gray-500 mt-4 max-w-xl mx-auto">Flexible delivery options tailored to your business needs.</p>
-          </AnimatedSection>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((s, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className="group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-blue-100 transition-all duration-500 text-center">
-                  <div className="text-5xl mb-5 group-hover:scale-125 transition-transform duration-500 inline-block">{s.icon}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{s.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
+      <section id="services" className="relative py-24 overflow-hidden">
+        {/* Animated background images */}
+        <div className="absolute inset-0">
+          {[hero2, hero1, heroPng, hero3].map((img, i) => (
+            <div key={i} className={`absolute inset-0 transition-all duration-1000 ease-in-out ${i === activeService ? 'opacity-60 scale-100' : 'opacity-0 scale-105'}`}>
+              <img src={img} alt="" className={`w-full h-full object-cover ${i === activeService ? 'animate-[slowZoom_20s_ease-in-out_infinite]' : ''}`} />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-white/10" />
         </div>
-      </section>
-
-      {/* Animated Fleet Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-blue-400 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-400 rounded-full blur-3xl" />
+        {/* Service indicator dots */}
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex gap-3">
+          {services.map((_, i) => (
+            <button key={i} onClick={() => {
+              serviceRefs.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              setActiveService(i);
+            }} className={`rounded-full transition-all duration-500 ${i === activeService ? 'bg-white w-8 h-2.5 animate-[pulseSoft_2s_ease-in-out_infinite]' : 'bg-white/30 hover:bg-white/60 w-2 h-2'}`} />
+          ))}
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-16">
-            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Our Fleet In Motion</span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-3">Delivering Across Nigeria</h2>
-            <p className="text-gray-500 mt-4 max-w-xl mx-auto">From busy city streets to cross-country highways, our fleet never stops moving.</p>
+            <span className="text-gray-800 font-semibold text-sm uppercase tracking-widest">Our Services</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-3">Delivery Solutions</h2>
+            <p className="text-gray-600 mt-4 max-w-xl mx-auto">Flexible delivery options tailored to your business needs.</p>
           </AnimatedSection>
-
-          <div className="relative h-[500px] sm:h-[600px] bg-gradient-to-b from-blue-900/5 via-indigo-900/10 to-blue-900/5 rounded-3xl border border-blue-200/30 overflow-hidden shadow-2xl">
-            {/* Road */}
-            <div className="absolute bottom-16 left-0 right-0 h-32">
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700" />
-              <div className="absolute bottom-8 left-0 right-0 h-1 bg-yellow-400/60" />
-              {/* Road dashes */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/30" style={{ backgroundImage: 'repeating-linear-gradient(90deg, white 0px, white 30px, transparent 30px, transparent 60px)', backgroundSize: '60px 100%' }} />
-            </div>
-
-            {/* Sky background */}
-            <div className="absolute top-0 left-0 right-0 bottom-32 bg-gradient-to-b from-blue-400/20 via-indigo-300/10 to-transparent" />
-
-            {/* Clouds */}
-            <div className="absolute top-8 left-[10%] text-4xl opacity-20 animate-pulse">☁️</div>
-            <div className="absolute top-16 left-[60%] text-5xl opacity-15 animate-pulse" style={{ animationDelay: '1s' }}>☁️</div>
-            <div className="absolute top-4 left-[35%] text-3xl opacity-10" style={{ animationDelay: '2s' }}>☁️</div>
-
-            {/* City buildings silhouette */}
-            <div className="absolute bottom-48 left-0 right-0 flex items-end gap-1 px-4">
-              {[40, 60, 35, 80, 50, 70, 45, 90, 55, 65, 30, 75, 50, 85, 42, 68, 52, 78, 62, 88, 48, 72, 58, 82, 44, 66, 38, 76, 54, 70, 46, 84, 56, 92, 50].map((h, i) => (
-                <div key={i} className="flex-1 bg-gradient-to-t from-gray-700/80 to-gray-600/60 rounded-t-sm" style={{ height: `${h}px`, maxWidth: '14px' }} />
-              ))}
-            </div>
-
-            {/* Plane */}
-            <div className="vehicle-plane absolute top-12 text-5xl z-10" style={{ animationDuration: '14s' }}>
-              <div className="relative">
-                <span className="relative z-10 drop-shadow-lg">✈️</span>
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-sm" />
-              </div>
-            </div>
-
-            {/* Bike */}
-            <div className="vehicle-bike absolute bottom-52 text-4xl z-20" style={{ animationDuration: '8s' }}>
-              <div className="relative">
-                <span className="relative z-10 drop-shadow-lg">🏍️</span>
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent blur-sm" />
-                <span className="absolute -top-3 left-1/2 text-xs text-orange-500 font-bold animate-pulse">📦</span>
-              </div>
-            </div>
-
-            {/* Car */}
-            <div className="vehicle-car absolute bottom-36 text-5xl z-20" style={{ animationDuration: '10s' }}>
-              <div className="relative">
-                <span className="relative z-10 drop-shadow-lg">🚗</span>
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-14 h-1 bg-gradient-to-r from-transparent via-blue-400/50 to-transparent blur-sm" />
-                <span className="absolute -top-2 -right-1 text-lg">💨</span>
-              </div>
-            </div>
-
-            {/* Van */}
-            <div className="vehicle-van absolute bottom-24 text-5xl z-20" style={{ animationDuration: '12s' }}>
-              <div className="relative">
-                <span className="relative z-10 drop-shadow-lg">🚐</span>
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-green-400/50 to-transparent blur-sm" />
-                <span className="absolute -top-3 left-0 text-lg">📦📦</span>
-              </div>
-            </div>
-
-            {/* Stars/particles */}
-            <div className="absolute top-0 left-0 right-0 h-32">
-              {[...Array(15)].map((_, i) => (
-                <div key={i} className="absolute w-1 h-1 bg-white rounded-full animate-ping" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${i * 0.3}s`, animationDuration: `${2 + Math.random() * 3}s`, opacity: 0.3 }} />
-              ))}
-            </div>
-
-            {/* Ground details */}
-            <div className="absolute bottom-12 left-4 text-xs text-gray-500 font-mono">🚦 GPS · ETA Optimized</div>
-            <div className="absolute bottom-12 right-4 text-xs text-gray-500 font-mono">📊 98% On-Time Rate</div>
-          </div>
-
-          <div className="text-center mt-8">
-            <AnimatedSection>
-              <p className="text-gray-500 text-sm">Real-time fleet monitoring · AI-optimized routes · 500+ vehicles nationwide</p>
-            </AnimatedSection>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {services.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <AnimatedSection key={i} delay={i * 100}>
+                  <div ref={el => serviceRefs.current[i] = el} data-index={i} className="group relative bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-2xl border border-white/30 hover:border-blue-400/50 transition-all duration-500 text-center hover:-translate-y-2 animate-[floatSlow_6s_ease-in-out_infinite] hover:animate-none" style={{ animationDelay: `${i * 0.3}s` }}>
+                    {/* Shimmer overlay on hover */}
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_100%] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[shimmer_2s_ease-in-out_infinite] pointer-events-none" />
+                    <div className="relative inline-flex items-center justify-center w-20 h-20 mb-5 group-hover:animate-[iconWobble_0.6s_ease-in-out]">
+                      <Icon size={36} className="text-blue-600 group-hover:text-blue-500 transition-colors duration-300" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 relative">{s.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed relative">{s.desc}</p>
+                  </div>
+                </AnimatedSection>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-24 bg-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5"><div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl" /><div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500 rounded-full blur-3xl" /></div>
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500 rounded-full blur-3xl" />
+        </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to Transform Your Logistics?</h2>
@@ -344,7 +355,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
-              <span className="text-2xl font-bold text-white">📦 LogiMove</span>
+              <span className="text-2xl font-bold text-white flex items-center gap-1.5"><Package size={24} /> LogiMove</span>
               <p className="mt-4 text-sm leading-relaxed">Smart logistics platform for modern businesses. Real-time tracking, analytics, and seamless delivery management.</p>
             </div>
             {[
@@ -360,7 +371,7 @@ export default function LandingPage() {
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm">© 2026 LogiMove. All rights reserved.</p>
-            <div className="flex gap-4 text-sm"><span className="hover:text-white transition-colors cursor-pointer">🇳🇬 Nigeria</span><span className="hover:text-white transition-colors cursor-pointer">Terms</span><span className="hover:text-white transition-colors cursor-pointer">Privacy</span></div>
+            <div className="flex gap-4 text-sm"><span className="hover:text-white transition-colors cursor-pointer">Nigeria</span><span className="hover:text-white transition-colors cursor-pointer">Terms</span><span className="hover:text-white transition-colors cursor-pointer">Privacy</span></div>
           </div>
         </div>
       </footer>

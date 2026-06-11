@@ -110,8 +110,10 @@ export default function Payment() {
                   <TableCell sx={{ fontWeight: 600 }}>{order.id?.slice(0, 8)}</TableCell>
                   <TableCell>{order.customer}</TableCell>
                   <TableCell>₦{order.cost?.toLocaleString()}</TableCell>
-                  <TableCell sx={{ display: 'flex', alignItems: 'center', gap: 0.5, textTransform: 'capitalize' }}>
-                    {methodIcon(order.paymentMethod)}
+                  <TableCell sx={{ textTransform: 'capitalize' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {methodIcon(order.paymentMethod)}
+                    </Box>
                   </TableCell>
                   <TableCell>
                     <Chip label={order.paymentStatus} size="small" color={order.paymentStatus === 'paid' ? 'success' : 'warning'} variant="filled" sx={{ fontWeight: 600, textTransform: 'capitalize' }} />

@@ -9,7 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
-import { X, LayoutDashboard, Package, MapPin, Users, CreditCard, Bell, Truck, UserRound, Warehouse, ClipboardList, BarChart3, MessageSquare, Navigation } from 'lucide-react';
+import { X, LayoutDashboard, Package, MapPin, Users, CreditCard, Bell, Truck, UserRound, Warehouse, ClipboardList, BarChart3, MessageSquare, Navigation, ScanLine } from 'lucide-react';
 
 const adminLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,6 +18,7 @@ const adminLinks = [
   { to: '/driver-assignment', label: 'Assign Drivers', icon: Users },
   { to: '/payments', label: 'Payments', icon: CreditCard },
   { to: '/notifications', label: 'Notifications', icon: Bell },
+  { to: '/qr-scan', label: 'QR Scan', icon: ScanLine },
   { to: '/fleet', label: 'Fleet', icon: Truck },
   { to: '/drivers', label: 'Drivers', icon: UserRound },
   { to: '/warehouses', label: 'Warehouses', icon: Warehouse },
@@ -31,6 +32,7 @@ const customerLinks = [
   { to: '/tracking', label: 'Track Package', icon: MapPin },
   { to: '/payments', label: 'Payments', icon: CreditCard },
   { to: '/notifications', label: 'Notifications', icon: Bell },
+  { to: '/qr-scan', label: 'QR Scan', icon: ScanLine },
   { to: '/support', label: 'Support', icon: MessageSquare },
 ];
 
@@ -38,6 +40,7 @@ const driverLinks = [
   { to: '/driver-portal', label: 'My Deliveries', icon: Package },
   { to: '/tracking', label: 'Navigation', icon: Navigation },
   { to: '/notifications', label: 'Alerts', icon: Bell },
+  { to: '/qr-scan', label: 'QR Scan', icon: ScanLine },
   { to: '/support', label: 'Support', icon: MessageSquare },
 ];
 
@@ -51,7 +54,7 @@ export default function Sidebar({ open, onClose }) {
     <Box sx={{ width: 260, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
         <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 800, cursor: 'pointer' }} onClick={() => navigate('/')}>
-          LogiMove
+          <Package size={22} /> LogiMove
         </Typography>
         <IconButton onClick={onClose} sx={{ display: { lg: 'none' } }} size="small">
           <X size={20} />

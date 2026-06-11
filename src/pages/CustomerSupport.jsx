@@ -19,7 +19,7 @@ import TableRow from '@mui/material/TableRow';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Alert from '@mui/material/Alert';
-import { MessageCircle, Phone, Mail, Send, Headphones, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { MessageCircle, Phone, Mail, Send, Headphones, AlertTriangle, CheckCircle, Clock, Package } from 'lucide-react';
 import { addSupportMessage, fetchSupportMessages } from '../firebase/services';
 import toast from 'react-hot-toast';
 
@@ -112,7 +112,7 @@ export default function CustomerSupport() {
               <Headphones size={22} />
             </Box>
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>LogiMove Support</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Package size={20} /><Typography variant="subtitle1" sx={{ fontWeight: 600 }}> LogiMove Support</Typography></Box>
               <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>Typically replies in a few minutes</Typography>
             </Box>
           </Box>

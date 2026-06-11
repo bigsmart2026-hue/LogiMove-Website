@@ -10,12 +10,12 @@ import TextField from '@mui/material/TextField';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import { Plus, X, Warehouse as WarehouseIcon, MapPin } from 'lucide-react';
+import { Plus, X, Warehouse as WarehouseIcon, MapPin, Phone, Mail, User } from 'lucide-react';
 
 export default function WarehouseManagement() {
   const [warehouses, setWarehouses] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [newWh, setNewWh] = useState({ name: '', location: '', capacity: '', manager: '' });
+  const [newWh, setNewWh] = useState({ name: '', location: '', capacity: '', manager: '', managerEmail: '', managerPhone: '' });
 
   const loadData = () => fetchWarehouses().then(setWarehouses);
   useEffect(() => { loadData(); }, []);
@@ -25,7 +25,7 @@ export default function WarehouseManagement() {
     await addWarehouse({ ...newWh, capacity: Number(newWh.capacity) || 1000 });
     await addActivityLog(`Added warehouse ${newWh.name}`);
     toast.success(`Warehouse ${newWh.name} added`);
-    setNewWh({ name: '', location: '', capacity: '', manager: '' });
+    setNewWh({ name: '', location: '', capacity: '', manager: '', managerEmail: '', managerPhone: '' });
     setShowForm(false);
     loadData();
   };
@@ -44,11 +44,13 @@ export default function WarehouseManagement() {
       {showForm && (
         <Paper sx={{ p: 2.5 }}>
           <Grid container spacing={1.5}>
-            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" placeholder="Warehouse Name" value={newWh.name} onChange={e => setNewWh(f => ({ ...f, name: e.target.value }))} /></Grid>
-            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" placeholder="Location" value={newWh.location} onChange={e => setNewWh(f => ({ ...f, location: e.target.value }))} /></Grid>
-            <Grid size={{ xs: 12, sm: 2 }}><TextField fullWidth size="small" placeholder="Capacity" type="number" value={newWh.capacity} onChange={e => setNewWh(f => ({ ...f, capacity: e.target.value }))} /></Grid>
-            <Grid size={{ xs: 12, sm: 2 }}><TextField fullWidth size="small" placeholder="Manager" value={newWh.manager} onChange={e => setNewWh(f => ({ ...f, manager: e.target.value }))} /></Grid>
+            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" label="Warehouse Name" value={newWh.name} onChange={e => setNewWh(f => ({ ...f, name: e.target.value }))} /></Grid>
+            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" label="Location" value={newWh.location} onChange={e => setNewWh(f => ({ ...f, location: e.target.value }))} /></Grid>
+            <Grid size={{ xs: 12, sm: 2 }}><TextField fullWidth size="small" label="Capacity (kg)" type="number" value={newWh.capacity} onChange={e => setNewWh(f => ({ ...f, capacity: e.target.value }))} /></Grid>
+            <Grid size={{ xs: 12, sm: 2 }}><TextField fullWidth size="small" label="Manager Name" value={newWh.manager} onChange={e => setNewWh(f => ({ ...f, manager: e.target.value }))} /></Grid>
             <Grid size={{ xs: 12, sm: 2 }}><Button variant="contained" color="success" fullWidth size="medium" onClick={handleAddWarehouse}>Save</Button></Grid>
+            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" label="Manager Email" type="email" value={newWh.managerEmail} onChange={e => setNewWh(f => ({ ...f, managerEmail: e.target.value }))} /></Grid>
+            <Grid size={{ xs: 12, sm: 3 }}><TextField fullWidth size="small" label="Manager Phone" value={newWh.managerPhone} onChange={e => setNewWh(f => ({ ...f, managerPhone: e.target.value }))} /></Grid>
           </Grid>
         </Paper>
       )}
@@ -76,8 +78,14 @@ export default function WarehouseManagement() {
                 <Grid container spacing={2} sx={{ mb: 1.5 }}>
                   <Grid size={4}><Typography variant="caption" color="text.secondary">Capacity</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{wh.currentStock?.toLocaleString()} / {wh.capacity?.toLocaleString()} kg</Typography></Grid>
                   <Grid size={4}><Typography variant="caption" color="text.secondary">Usage</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{Math.round((wh.currentStock / wh.capacity) * 100)}%</Typography></Grid>
-                  <Grid size={4}><Typography variant="caption" color="text.secondary">Manager</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{wh.manager}</Typography></Grid>
+                  <Grid size={4}><Typography variant="caption" color="text.secondary">Manager</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{wh.manager || '—'}</Typography></Grid>
                 </Grid>
+                {(wh.managerEmail || wh.managerPhone) && (
+                  <Grid container spacing={2} sx={{ mb: 1 }}>
+                    {wh.managerEmail && <Grid size={6}><Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Mail size={12} /><Typography variant="caption" color="text.secondary">{wh.managerEmail}</Typography></Box></Grid>}
+                    {wh.managerPhone && <Grid size={6}><Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Phone size={12} /><Typography variant="caption" color="text.secondary">{wh.managerPhone}</Typography></Box></Grid>}
+                  </Grid>
+                )}
                 <LinearProgress variant="determinate" value={(wh.currentStock / wh.capacity) * 100} sx={{ height: 6, borderRadius: 3, bgcolor: 'grey.200', '& .MuiLinearProgress-bar': { bgcolor: 'primary.main', borderRadius: 3 } }} />
               </Paper>
             ))}

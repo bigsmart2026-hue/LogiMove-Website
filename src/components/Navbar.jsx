@@ -7,23 +7,33 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import { Menu, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu, LogOut, Sun, Moon, Package } from 'lucide-react';
 
 export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const { toggleTheme, mode } = useThemeMode();
 
   return (
-    <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+    <AppBar position="sticky" elevation={0} sx={{
+      bgcolor: 'rgba(255, 255, 255, 0.75)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderBottom: '1px solid',
+      borderColor: 'divider',
+      transition: 'background-color 0.3s ease',
+    }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton onClick={onMenuClick} sx={{ display: { lg: 'none' } }} edge="start" size="small">
             <Menu size={22} />
           </IconButton>
-          <Typography variant="h6" sx={{ display: { lg: 'none' }, color: 'text.primary' }}>LogiMove</Typography>
+          <Box sx={{ display: { lg: 'none' }, alignItems: 'center', gap: 0.5, color: 'text.primary' }}>
+            <Package size={22} />
+            <Typography variant="h6" sx={{ color: 'inherit' }}>LogiMove</Typography>
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, color: 'text.primary', fontWeight: 500 }}>
             Welcome, {user?.name}
           </Typography>
           <IconButton onClick={toggleTheme} size="small" sx={{ color: 'text.secondary' }} title={mode === 'light' ? 'Dark mode' : 'Light mode'}>

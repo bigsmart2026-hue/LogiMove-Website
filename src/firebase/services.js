@@ -22,7 +22,8 @@ import {
   onSnapshot,
   arrayUnion,
 } from 'firebase/firestore';
-import { auth, db, googleProvider } from './config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, db, storage, googleProvider } from './config';
 
 /* ───────── Auth ───────── */
 
@@ -269,6 +270,14 @@ export async function updateWarehouse(id, updates) {
 export async function updateUserProfile(userId, data) {
   await updateDoc(doc(db, 'users', userId), data);
   return { userId, ...data };
+}
+
+export async function uploadProfileImage(userId, file) {
+  const storageRef = ref(storage, `profiles/${userId}/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  await updateDoc(doc(db, 'users', userId), { photoURL: url });
+  return url;
 }
 
 export async function addInventoryItem(data) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchDrivers, fetchOrders, fetchVehicles, addDriver, assignDriver } from '../firebase/services';
+import { useThemeMode } from '../context/ThemeContext';
 import StatusBadge from '../components/StatusBadge';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -22,13 +23,19 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import Chip from '@mui/material/Chip';
 import toast from 'react-hot-toast';
-import { Users, UserCheck, Truck, Star, Plus, Bike, Phone, Mail, IdCard } from 'lucide-react';
+import { UserCheck, Truck, Star, Plus, Bike, Phone, Mail, IdCard } from 'lucide-react';
 
 const typeIcons = { bike: Bike, van: Truck, truck: Truck };
+const h = { fontWeight: 700 }, f = { display: 'flex', alignItems: 'center', gap: 0.5 };
 
 export default function Drivers() {
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
+  const bg = isDark ? '#111827' : '#fff';
+  const border = isDark ? '#1f2937' : '#e2e8f0';
+  const text = isDark ? '#f3f4f6' : '#0f172a';
+  const muted = isDark ? '#6b7280' : '#64748b';
   const [drivers, setDrivers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -36,15 +43,15 @@ export default function Drivers() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', vehicleId: '', driverId: '' });
   const [selectedOrder, setSelectedOrder] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const loadData = () => Promise.all([fetchDrivers(), fetchOrders(), fetchVehicles()]).then(([d, o, v]) => { setDrivers(d); setOrders(o); setVehicles(v); });
   useEffect(() => { loadData(); }, []);
 
-  const driverActiveDeliveries = (driverId) => orders.filter(o => o.assignedDriver === driverId && o.status !== 'delivered' && o.status !== 'cancelled').length;
+  const activeDeliveries = (id) => orders.filter(o => o.assignedDriver === id && o.status !== 'delivered' && o.status !== 'cancelled').length;
   const avgRating = drivers.length ? (drivers.reduce((s, d) => s + d.rating, 0) / drivers.length).toFixed(1) : '0.0';
-  const pendingOrders = orders.filter(o => !o.assignedDriver && o.status !== 'delivered' && o.status !== 'cancelled');
 
-  const getVehicleForDriver = (driverId) => vehicles.find(v => v.driverId === driverId);
+  const getVehicle = (driverId) => vehicles.find(v => v.driverId === driverId);
 
   const handleAddDriver = async () => {
     if (!form.name || !form.email) {
@@ -53,19 +60,12 @@ export default function Drivers() {
     }
     setSubmitting(true);
     try {
-      const driver = await addDriver({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        vehicleId: form.vehicleId || '',
-        driverId: form.driverId || '',
-        status: 'available',
-        rating: 5.0,
-        totalDeliveries: 0,
-        earnings: 0,
+      const d = await addDriver({
+        name: form.name, email: form.email, phone: form.phone, vehicleId: form.vehicleId || '',
+        driverId: form.driverId || '', status: 'available', rating: 5.0, totalDeliveries: 0, earnings: 0,
       });
       if (selectedOrder) {
-        await assignDriver(selectedOrder, driver.id);
+        await assignDriver(selectedOrder, d.id);
         toast.success(`Driver ${form.name} added and assigned an order`);
       } else {
         toast.success(`Driver ${form.name} added successfully`);
@@ -82,64 +82,64 @@ export default function Drivers() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4">Driver Management</Typography>
-        <Button variant="contained" startIcon={<Plus size={18} />} onClick={() => setDriverOpen(true)} sx={{ borderRadius: 2, fontWeight: 600 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: text, letterSpacing: '-0.02em' }}>Driver Management</Typography>
+        <Button variant="contained" size="small" startIcon={<Plus size={14} />} onClick={() => setDriverOpen(true)} sx={{ fontSize: '0.75rem' }}>
           Add Driver
         </Button>
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Total Drivers</Typography><Typography variant="h4">{drivers.length}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Available</Typography><Typography variant="h4" sx={{ color: 'success.main' }}>{drivers.filter(d => d.status === 'available').length}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>On Delivery</Typography><Typography variant="h4" sx={{ color: 'primary.main' }}>{drivers.filter(d => d.status === 'on-delivery').length}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Avg Rating</Typography><Typography variant="h4" sx={{ color: 'warning.main', display: 'flex', alignItems: 'center', gap: 0.5 }}>{avgRating} <Star size={20} /></Typography></Paper></Grid>
+      <Grid container spacing={1.5}>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Drivers</Typography><Typography variant="body1" sx={{ color: text, fontWeight: 700, fontSize: '1.1rem', mt: 0.3 }}>{drivers.length}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Available</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: '#10b981' }}>{drivers.filter(d => d.status === 'available').length}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>On Delivery</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: 'hsl(8, 85%, 55%)' }}>{drivers.filter(d => d.status === 'on-delivery').length}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Rating</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: '#f59e0b', ...f }}>{avgRating} <Star size={14} /></Typography></Paper></Grid>
       </Grid>
 
-      <Paper>
+      <Paper sx={{ bgcolor: bg, border: `1px solid ${border}`, overflow: 'hidden' }}>
         <TableContainer>
-          <Table size="small">
+          <Table size="small" sx={{ fontSize: '0.75rem' }}>
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Driver ID</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Contact</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Vehicle</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Rating</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Deliveries</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Active</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Earnings</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+              <TableRow sx={{ '& > th': { color: muted, fontWeight: 600, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: `1px solid ${border}` } }}>
+                <TableCell sx={h}>Driver ID</TableCell>
+                <TableCell sx={h}>Name</TableCell>
+                <TableCell sx={h}>Contact</TableCell>
+                <TableCell sx={h}>Vehicle</TableCell>
+                <TableCell sx={h}>Rating</TableCell>
+                <TableCell sx={h}>Deliveries</TableCell>
+                <TableCell sx={h}>Active</TableCell>
+                <TableCell sx={h}>Earnings</TableCell>
+                <TableCell sx={h}>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {drivers.map(driver => {
-                const vehicle = getVehicleForDriver(driver.id);
+              {drivers.map(d => {
+                const vehicle = getVehicle(d.id);
                 const TypeIcon = typeIcons[vehicle?.type] || Truck;
                 return (
-                  <TableRow key={driver.id} hover>
+                  <TableRow key={d.id} hover>
                     <TableCell sx={{ fontSize: '0.8rem', fontWeight: 600 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <IdCard size={12} /> {driver.id?.slice(0, 10)}
+                      <Box sx={f}>
+                        <IdCard size={12} /> {d.id?.slice(0, 10)}
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: '0.875rem', fontWeight: 700 }}>{driver.name?.charAt(0)}</Avatar>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{driver.name}</Typography>
+                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: '0.875rem', fontWeight: 700 }}>{d.name?.charAt(0)}</Avatar>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{d.name}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell sx={{ fontSize: '0.8rem' }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3 }}>
-                        {driver.phone && <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Phone size={12} /> {driver.phone}</Box>}
-                        {driver.email && <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Mail size={12} /> {driver.email}</Box>}
-                        {!driver.phone && !driver.email && <Typography variant="caption" color="text.disabled">—</Typography>}
+                        {d.phone && <Box sx={f}><Phone size={12} /> {d.phone}</Box>}
+                        {d.email && <Box sx={f}><Mail size={12} /> {d.email}</Box>}
+                        {!d.phone && !d.email && <Typography variant="caption" color="text.disabled">—</Typography>}
                       </Box>
                     </TableCell>
                     <TableCell>
                       {vehicle ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Box sx={f}>
                           <TypeIcon size={14} />
                           <Typography variant="caption" sx={{ textTransform: 'capitalize' }}>{vehicle.type}</Typography>
                           <Typography variant="caption" color="text.disabled">({vehicle.plateNumber})</Typography>
@@ -148,11 +148,11 @@ export default function Drivers() {
                         <Typography variant="caption" color="text.disabled">—</Typography>
                       )}
                     </TableCell>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Star size={14} color="#d97706" />{driver.rating}</Box></TableCell>
-                    <TableCell>{driver.totalDeliveries}</TableCell>
-                    <TableCell>{driverActiveDeliveries(driver.id)}</TableCell>
-                    <TableCell>₦{driver.earnings?.toLocaleString()}</TableCell>
-                    <TableCell><StatusBadge status={driver.status === 'on-delivery' ? 'in-transit' : driver.status} /></TableCell>
+                    <TableCell><Box sx={f}><Star size={14} color="#d97706" />{d.rating}</Box></TableCell>
+                    <TableCell>{d.totalDeliveries}</TableCell>
+                    <TableCell>{activeDeliveries(d.id)}</TableCell>
+                    <TableCell>₦{d.earnings?.toLocaleString()}</TableCell>
+                    <TableCell><StatusBadge status={d.status === 'on-delivery' ? 'in-transit' : d.status} /></TableCell>
                   </TableRow>
                 );
               })}
@@ -168,20 +168,21 @@ export default function Drivers() {
         </TableContainer>
       </Paper>
 
-      {/* Add Driver Dialog */}
-      <Dialog open={driverOpen} onClose={() => setDriverOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <UserCheck size={20} /> Add New Driver
+      <Dialog open={driverOpen} onClose={() => setDriverOpen(false)} maxWidth="sm" fullWidth
+        PaperProps={{ sx: { bgcolor: bg, color: text, border: `1px solid ${border}` } }}>
+        <DialogTitle sx={{ fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <UserCheck size={18} /> Add New Driver
         </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
-            <TextField label="Full Name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required fullWidth size="small" />
-            <TextField label="Email" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required fullWidth size="small" />
-            <TextField label="Phone Number" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} fullWidth size="small" placeholder="+234 800 000 0000" />
-            <TextField label="Driver ID (optional)" value={form.driverId} onChange={e => setForm(f => ({ ...f, driverId: e.target.value }))} fullWidth size="small" placeholder="e.g., DRV-001" />
+        <DialogContent dividers sx={{ borderColor: border }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <TextField label="Full Name" value={form.name} onChange={set('name')} required fullWidth size="small" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
+            <TextField label="Email" type="email" value={form.email} onChange={set('email')} required fullWidth size="small" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
+            <TextField label="Phone Number" value={form.phone} onChange={set('phone')} fullWidth size="small" placeholder="+234 800 000 0000" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
+            <TextField label="Driver ID (optional)" value={form.driverId} onChange={set('driverId')} fullWidth size="small" placeholder="e.g., DRV-001" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
             <FormControl fullWidth size="small">
-              <InputLabel>Assign Vehicle (optional)</InputLabel>
-              <Select value={form.vehicleId} onChange={e => setForm(f => ({ ...f, vehicleId: e.target.value }))} label="Assign Vehicle (optional)">
+              <InputLabel sx={{ color: muted }}>Assign Vehicle (optional)</InputLabel>
+              <Select value={form.vehicleId} onChange={set('vehicleId')} label="Assign Vehicle (optional)"
+                sx={{ color: text, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiSvgIcon-root': { color: muted } }}>
                 <MenuItem value="">No vehicle</MenuItem>
                 {vehicles.filter(v => !v.driverId || v.driverId === '').map(v => (
                   <MenuItem key={v.id} value={v.id}>
@@ -191,10 +192,11 @@ export default function Drivers() {
               </Select>
             </FormControl>
             <FormControl fullWidth size="small">
-              <InputLabel>Assign Task (optional)</InputLabel>
-              <Select value={selectedOrder} onChange={e => setSelectedOrder(e.target.value)} label="Assign Task (optional)">
+              <InputLabel sx={{ color: muted }}>Assign Task (optional)</InputLabel>
+              <Select value={selectedOrder} onChange={e => setSelectedOrder(e.target.value)} label="Assign Task (optional)"
+                sx={{ color: text, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiSvgIcon-root': { color: muted } }}>
                 <MenuItem value="">None</MenuItem>
-                {pendingOrders.map(o => (
+                {orders.filter(o => !o.assignedDriver && o.status !== 'delivered' && o.status !== 'cancelled').map(o => (
                   <MenuItem key={o.id} value={o.id}>
                     {o.id?.slice(0, 10)} — {o.customer || 'N/A'} ({o.origin?.split(',')[0]} → {o.destination?.split(',')[0]})
                   </MenuItem>
@@ -203,9 +205,9 @@ export default function Drivers() {
             </FormControl>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDriverOpen(false)} variant="outlined">Cancel</Button>
-          <Button onClick={handleAddDriver} variant="contained" disabled={submitting} startIcon={<UserCheck size={18} />}>
+        <DialogActions sx={{ px: 3, pb: 2, borderTop: `1px solid ${border}` }}>
+          <Button onClick={() => setDriverOpen(false)} variant="outlined" sx={{ borderColor: border, color: muted, fontSize: '0.75rem' }}>Cancel</Button>
+          <Button onClick={handleAddDriver} variant="contained" disabled={submitting} startIcon={<UserCheck size={14} />} sx={{ bgcolor: 'hsl(8, 85%, 55%)', fontSize: '0.75rem' }}>
             {submitting ? 'Adding...' : 'Add Driver'}
           </Button>
         </DialogActions>

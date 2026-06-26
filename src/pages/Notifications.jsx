@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { useThemeMode } from '../context/ThemeContext';
 import { fetchOrders, fetchNotifications, updateOrder, addActivityLog } from '../firebase/services';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,12 @@ const typeIcons = { status_update: Package, payment: CreditCard, default: Truck 
 
 export default function Notifications() {
   const { user } = useAuth();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
+  const bg = isDark ? '#111827' : '#fff';
+  const border = isDark ? '#1f2937' : '#e2e8f0';
+  const text = isDark ? '#f3f4f6' : '#0f172a';
+  const muted = isDark ? '#6b7280' : '#64748b';
   const [notifications, setNotifications] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -66,17 +73,17 @@ export default function Notifications() {
   const unread = notifications.filter(n => !n.read).length;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="h4">Notifications</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: text, letterSpacing: '-0.02em' }}>Notifications</Typography>
           {unread > 0 && <Badge badgeContent={unread} color="primary" />}
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           {user?.role === 'admin' && (
-            <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={simulateUpdate} size="small">Simulate Update</Button>
+            <Button variant="contained" startIcon={<RefreshCw size={14} />} onClick={simulateUpdate} size="small" sx={{ fontSize: '0.75rem' }}>Simulate Update</Button>
           )}
-          <Button variant="outlined" startIcon={<CheckCheck size={16} />} onClick={markAllRead} size="small">Mark All Read</Button>
+          <Button variant="outlined" startIcon={<CheckCheck size={14} />} onClick={markAllRead} size="small" sx={{ fontSize: '0.75rem' }}>Mark All Read</Button>
         </Box>
       </Box>
 
@@ -87,34 +94,35 @@ export default function Notifications() {
             <Paper
               key={n.id}
               sx={{
-                p: 2,
+                p: 1.5,
                 border: '1px solid',
-                borderColor: n.read ? 'divider' : 'primary.light',
-                bgcolor: n.read ? 'background.paper' : 'action.selected',
+                borderColor: n.read ? border : 'hsl(8, 85%, 55%)',
+                bgcolor: n.read ? bg : (isDark ? '#1a1f2e' : '#f0f5ff'),
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 2,
+                gap: 1.5,
+                borderRadius: 2,
               }}
             >
-              <Box sx={{ color: n.read ? 'text.secondary' : 'primary.main', mt: 0.3 }}>
-                <Icon size={22} />
+              <Box sx={{ color: n.read ? muted : 'hsl(8, 85%, 55%)', mt: 0.2 }}>
+                <Icon size={16} />
               </Box>
               <Box sx={{ flex: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" sx={{ fontWeight: n.read ? 400 : 600 }}>
+                  <Typography variant="body2" sx={{ fontWeight: n.read ? 400 : 600, color: text, fontSize: '0.75rem' }}>
                     {n.message}
                   </Typography>
-                  {!n.read && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', flexShrink: 0 }} />}
+                  {!n.read && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'hsl(8, 85%, 55%)', flexShrink: 0 }} />}
                 </Box>
-                <Typography variant="caption" color="text.secondary">{new Date(n.timestamp).toLocaleString()}</Typography>
+                <Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem' }}>{new Date(n.timestamp).toLocaleString()}</Typography>
               </Box>
             </Paper>
           );
         })}
         {notifications.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Bell size={48} style={{ margin: '0 auto', color: '#94a3b8' }} />
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>No notifications</Typography>
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Bell size={32} style={{ margin: '0 auto', color: muted }} />
+            <Typography variant="body2" sx={{ color: muted, mt: 1, fontSize: '0.75rem' }}>No notifications</Typography>
           </Box>
         )}
       </Box>

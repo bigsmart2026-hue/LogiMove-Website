@@ -18,11 +18,14 @@
     "@mui/icons-material": "^9.1.0",
     "@mui/material": "^9.1.0",
     "@mui/system": "^9.1.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "file-saver": "^2.0.5",
     "firebase": "^11.6.0",
     "html5-qrcode": "^2.3.8",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.17.0",
+    "motion": "^12.40.0",
     "papaparse": "^5.5.3",
     "react": "^19.2.6",
     "react-csv": "^2.0.3",
@@ -31,6 +34,7 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.16.0",
     "recharts": "^3.8.1",
+    "three": "^0.184.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useThemeMode } from '../context/ThemeContext';
 import { fetchInventory, updateInventoryItem, addActivityLog } from '../firebase/services';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -20,6 +21,8 @@ import { Package, Plus, AlertTriangle } from 'lucide-react';
 export default function InventoryTracking() {
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState('all');
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   const loadData = () => fetchInventory().then(setItems);
   useEffect(() => { loadData(); }, []);
@@ -35,22 +38,22 @@ export default function InventoryTracking() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="h4">Inventory Tracking</Typography>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: isDark ? '#f3f4f6' : '#0f172a', letterSpacing: '-0.02em' }}>Inventory Tracking</Typography>
         <ToggleButtonGroup value={filter} exclusive onChange={(_, v) => v && setFilter(v)} size="small">
-          <ToggleButton value="all">All ({items.length})</ToggleButton>
-          <ToggleButton value="low">Low Stock ({lowStockItems.length})</ToggleButton>
+          <ToggleButton value="all" sx={{ fontSize: '0.7rem' }}>All ({items.length})</ToggleButton>
+          <ToggleButton value="low" sx={{ fontSize: '0.7rem' }}>Low Stock ({lowStockItems.length})</ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary">Total Items</Typography><Typography variant="h4">{items.length}</Typography></Paper></Grid>
-        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary">Total Quantity</Typography><Typography variant="h4">{items.reduce((s, i) => s + i.quantity, 0).toLocaleString()}</Typography></Paper></Grid>
-        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary">Low Stock Alerts</Typography><Typography variant="h4" sx={{ color: 'error.main' }}>{lowStockItems.length}</Typography></Paper></Grid>
+      <Grid container spacing={1.5}>
+        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2, bgcolor: isDark ? '#111827' : '#fff', border: `1px solid ${isDark ? '#1f2937' : '#e2e8f0'}` }}><Typography variant="caption" color={isDark ? '#9ca3af' : '#64748b'} sx={{ fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Items</Typography><Typography variant="body1" sx={{ color: isDark ? '#f3f4f6' : '#0f172a', fontWeight: 700, fontSize: '1.1rem', mt: 0.3 }}>{items.length}</Typography></Paper></Grid>
+        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2, bgcolor: isDark ? '#111827' : '#fff', border: `1px solid ${isDark ? '#1f2937' : '#e2e8f0'}` }}><Typography variant="caption" color={isDark ? '#9ca3af' : '#64748b'} sx={{ fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Quantity</Typography><Typography variant="body1" sx={{ color: isDark ? '#f3f4f6' : '#0f172a', fontWeight: 700, fontSize: '1.1rem', mt: 0.3 }}>{items.reduce((s, i) => s + i.quantity, 0).toLocaleString()}</Typography></Paper></Grid>
+        <Grid size={{ xs: 12, sm: 4 }}><Paper sx={{ p: 2, bgcolor: isDark ? '#111827' : '#fff', border: `1px solid ${isDark ? '#1f2937' : '#e2e8f0'}` }}><Typography variant="caption" color={isDark ? '#9ca3af' : '#64748b'} sx={{ fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Low Stock Alerts</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: '#ef4444' }}>{lowStockItems.length}</Typography></Paper></Grid>
       </Grid>
 
-      <Paper>
+      <Paper sx={{ bgcolor: isDark ? '#111827' : '#fff', border: `1px solid ${isDark ? '#1f2937' : '#e2e8f0'}`, overflow: 'hidden' }}>
         <TableContainer>
           <Table size="small">
             <TableHead>
@@ -75,11 +78,11 @@ export default function InventoryTracking() {
                     <TableCell>{item.warehouse}</TableCell>
                     <TableCell>{item.quantity} {item.unit}</TableCell>
                     <TableCell>{item.minStock}</TableCell>
-                    <TableCell>
-                      <Chip label={isLow ? 'Low Stock' : 'In Stock'} size="small" color={isLow ? 'error' : 'success'} variant="filled" sx={{ fontWeight: 600 }} />
-                    </TableCell>
-                    <TableCell>
-                      <Button size="small" variant="outlined" startIcon={<Plus size={14} />} onClick={() => restock(item)}>Restock</Button>
+                  <TableCell>
+                    <Chip label={isLow ? 'Low Stock' : 'In Stock'} size="small" color={isLow ? 'error' : 'success'} variant="filled" sx={{ fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Button size="small" variant="outlined" startIcon={<Plus size={12} />} onClick={() => restock(item)} sx={{ fontSize: '0.65rem', minWidth: 0, p: '2px 8px' }}>Restock</Button>
                     </TableCell>
                   </TableRow>
                 );

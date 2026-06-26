@@ -1,23 +1,54 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Box from '@mui/material/Box';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
+import { useThemeMode } from '../context/ThemeContext';
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   return (
-    <Box className="dashboard-layout" sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default' }}>
+    <div className="dashboard-layout" style={{
+      display: 'flex',
+      height: '100vh',
+      background: 'var(--color-bg-primary)',
+    }}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        minWidth: 0,
+      }}>
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
-        <Box component="main" sx={{ flex: 1, overflow: 'auto', p: { xs: 2, md: 3 }, maxWidth: '100%' }}>
+        <main className="layout-main" style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '16px 24px',
+          maxWidth: '100%',
+        }}>
           <Outlet />
-        </Box>
-      </Box>
-      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { borderRadius: '12px', padding: '12px 16px', fontSize: '14px' } }} />
-    </Box>
+        </main>
+      </div>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            borderRadius: '8px',
+            padding: '10px 16px',
+            fontSize: '0.75rem',
+            fontFamily: '"Inter", "SF Pro Text", -apple-system, BlinkMacSystemFont, sans-serif',
+            background: isDark ? 'hsl(222, 12%, 16%)' : '#fff',
+            color: isDark ? 'hsl(210, 20%, 98%)' : '#0f172a',
+            border: isDark ? '1px solid hsl(222, 8%, 32%)' : '1px solid #e2e8f0',
+          },
+        }}
+      />
+    </div>
   );
 }

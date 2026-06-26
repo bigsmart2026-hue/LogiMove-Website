@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { fetchOrders, updateOrderStatus } from '../firebase/services';
+import { useThemeMode } from '../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -23,6 +24,12 @@ import StatusBadge from '../components/StatusBadge';
 
 export default function QRScan() {
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
+  const bg = isDark ? '#111827' : '#fff';
+  const border = isDark ? '#1f2937' : '#e2e8f0';
+  const text = isDark ? '#f3f4f6' : '#0f172a';
+  const muted = isDark ? '#6b7280' : '#64748b';
   const [scannedData, setScannedData] = useState('');
   const [scanning, setScanning] = useState(false);
   const [scannedOrder, setScannedOrder] = useState(null);
@@ -123,40 +130,40 @@ export default function QRScan() {
   const canMarkDelivered = scannedOrder && !isDelivered && !isCancelled;
 
   return (
-    <Box sx={{ maxWidth: 560, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ maxWidth: 560, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h4">QR Scanner</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: text, letterSpacing: '-0.02em' }}>QR Scanner</Typography>
+        <Typography variant="caption" sx={{ color: muted, fontSize: '0.7rem', mt: 0.3, display: 'block' }}>
           Scan a delivery QR code to look up an order and mark it as delivered
         </Typography>
       </Box>
 
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 2, bgcolor: '#111827', border: '1px solid #1f2937' }}>
         <Box id="qr-reader" className={`w-full ${scanning ? '' : 'hidden'}`} />
         {!scanning && !scannedData && !error && (
-          <Box sx={{ py: 6, textAlign: 'center' }}>
-            <ScanLine size={64} style={{ color: '#94a3b8', marginBottom: 16, opacity: 0.5 }} />
-            <Typography variant="body2" color="text.disabled">Point camera at a QR code</Typography>
+          <Box sx={{ py: 4, textAlign: 'center' }}>
+            <ScanLine size={40} style={{ color: muted, marginBottom: 12, opacity: 0.5 }} />
+            <Typography variant="caption" sx={{ color: muted, fontSize: '0.7rem' }}>Point camera at a QR code</Typography>
           </Box>
         )}
         {error && (
-          <Box sx={{ py: 4, textAlign: 'center' }}>
-            <XCircle size={48} color="#ef4444" style={{ marginBottom: 12 }} />
-            <Typography variant="body2" color="error.main" sx={{ mb: 2 }}>{error}</Typography>
-            <Button variant="outlined" startIcon={<RotateCcw size={16} />} onClick={() => { setError(null); startScan(); }}>
+          <Box sx={{ py: 3, textAlign: 'center' }}>
+            <XCircle size={32} color="#ef4444" style={{ marginBottom: 8 }} />
+            <Typography variant="caption" color="#ef4444" sx={{ fontSize: '0.75rem', mb: 1.5, display: 'block' }}>{error}</Typography>
+            <Button variant="outlined" size="small" startIcon={<RotateCcw size={12} />} onClick={() => { setError(null); startScan(); }} sx={{ fontSize: '0.7rem' }}>
               Try Again
             </Button>
           </Box>
         )}
       </Paper>
 
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center' }}>
         <Button
           variant="contained"
-          size="large"
-          startIcon={scanning ? <CameraOff size={20} /> : <Camera size={20} />}
+          size="small"
+          startIcon={scanning ? <CameraOff size={14} /> : <Camera size={14} />}
           onClick={scanning ? stopScan : startScan}
-          sx={{ borderRadius: 3, px: 4, py: 1.5 }}
+          sx={{ borderRadius: 2, px: 3, fontSize: '0.75rem' }}
           color={scanning ? 'error' : 'primary'}
         >
           {scanning ? 'Stop Scanner' : 'Start Scanner'}
@@ -164,90 +171,91 @@ export default function QRScan() {
       </Box>
 
       {scannedData && (
-        <Paper sx={{ p: 2, bgcolor: 'success.main', color: '#fff', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <CheckCircle size={20} />
-          <Typography variant="body2" fontWeight={600}>Scanned: {scannedData}</Typography>
+        <Paper sx={{ p: 1.5, bgcolor: bg, border: '1px solid #10b981', color: '#10b981', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircle size={14} />
+          <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem' }}>Scanned: {scannedData}</Typography>
         </Paper>
       )}
 
       {/* Confirm Delivery Dialog */}
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Package size={20} color="#2563eb" />
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="sm" fullWidth
+        PaperProps={{ sx: { bgcolor: bg, color: text, border: `1px solid ${border}` } }}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700, fontSize: '0.95rem' }}>
+          <Package size={16} color="hsl(8, 85%, 55%)" />
           Confirm Delivery
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ borderColor: border }}>
           {scannedOrder && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" fontWeight={700}>{scannedOrder.id?.slice(0, 10)}</Typography>
+                <Typography variant="body1" fontWeight={700} sx={{ fontSize: '0.9rem', color: text }}>{scannedOrder.id?.slice(0, 10)}</Typography>
                 <StatusBadge status={scannedOrder.status} />
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <MapPin size={16} color="#64748b" />
-                <Typography variant="body2">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <MapPin size={12} color="#6b7280" />
+                <Typography variant="caption" sx={{ color: isDark ? '#d1d5db' : '#475569', fontSize: '0.7rem' }}>
                   {scannedOrder.origin?.split(',')[0] || 'N/A'} → {scannedOrder.destination?.split(',')[0] || 'N/A'}
                 </Typography>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <User size={16} color="#64748b" />
-                <Typography variant="body2">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <User size={12} color="#6b7280" />
+                <Typography variant="caption" sx={{ color: isDark ? '#d1d5db' : '#475569', fontSize: '0.7rem' }}>
                   {scannedOrder.customer || scannedOrder.senderName || 'N/A'}
                 </Typography>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Package size={16} color="#64748b" />
-                <Typography variant="body2">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Package size={12} color="#6b7280" />
+                <Typography variant="caption" sx={{ color: isDark ? '#d1d5db' : '#475569', fontSize: '0.7rem' }}>
                   {scannedOrder.weight ? `${scannedOrder.weight} kg` : 'N/A'} · {scannedOrder.vehicleType || 'N/A'} · ₦{scannedOrder.cost?.toLocaleString() || 'N/A'}
                 </Typography>
               </Box>
 
               {scannedOrder.description && (
-                <Box sx={{ p: 1.5, bgcolor: 'grey.100', borderRadius: 2 }}>
-                  <Typography variant="caption" color="text.secondary">Description:</Typography>
-                  <Typography variant="body2">{scannedOrder.description}</Typography>
+                <Box sx={{ p: 1, bgcolor: isDark ? '#1a1f2e' : '#f8fafc', borderRadius: 1 }}>
+                  <Typography variant="caption" sx={{ color: muted, fontSize: '0.6rem' }}>Description:</Typography>
+                  <Typography variant="caption" sx={{ color: isDark ? '#d1d5db' : '#475569', fontSize: '0.7rem' }}>{scannedOrder.description}</Typography>
                 </Box>
               )}
 
               {scannedOrder.trackingHistory?.length > 0 && (
                 <Box>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                    <Clock size={12} /> Last Update:
+                  <Typography variant="caption" sx={{ color: muted, display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.3, fontSize: '0.6rem' }}>
+                    <Clock size={10} /> Last Update:
                   </Typography>
-                  <Typography variant="body2">
+                  <Typography variant="caption" sx={{ color: isDark ? '#d1d5db' : '#475569', fontSize: '0.7rem' }}>
                     {scannedOrder.trackingHistory[scannedOrder.trackingHistory.length - 1].status} — {new Date(scannedOrder.trackingHistory[scannedOrder.trackingHistory.length - 1].timestamp).toLocaleString()}
                   </Typography>
                 </Box>
               )}
 
-              <Divider />
+              <Divider sx={{ borderColor: border }} />
 
               {isDelivered ? (
-                <Box sx={{ textAlign: 'center', py: 2 }}>
-                  <CheckCircle size={48} color="#16a34a" style={{ marginBottom: 8 }} />
-                  <Chip icon={<CheckCircle size={16} />} label="Already delivered" color="success" sx={{ fontWeight: 600 }} />
+                <Box sx={{ textAlign: 'center', py: 1.5 }}>
+                  <CheckCircle size={32} color="#10b981" style={{ marginBottom: 6 }} />
+                  <Chip icon={<CheckCircle size={12} />} label="Already delivered" color="success" size="small" sx={{ fontWeight: 600, fontSize: '0.65rem' }} />
                 </Box>
               ) : isCancelled ? (
-                <Box sx={{ textAlign: 'center', py: 2 }}>
-                  <XCircle size={48} color="#dc2626" style={{ marginBottom: 8 }} />
-                  <Chip icon={<XCircle size={16} />} label="Order cancelled" color="error" sx={{ fontWeight: 600 }} />
+                <Box sx={{ textAlign: 'center', py: 1.5 }}>
+                  <XCircle size={32} color="#ef4444" style={{ marginBottom: 6 }} />
+                  <Chip icon={<XCircle size={12} />} label="Order cancelled" color="error" size="small" sx={{ fontWeight: 600, fontSize: '0.65rem' }} />
                 </Box>
               ) : (
-                <Box sx={{ textAlign: 'center', py: 2 }}>
-                  <Box sx={{ p: 2, bgcolor: 'warning.main', color: '#fff', borderRadius: 2, mb: 1 }}>
-                    <Typography variant="body2" fontWeight={600}>Mark this order as delivered?</Typography>
-                    <Typography variant="caption">This action will update the order status permanently.</Typography>
+                <Box sx={{ textAlign: 'center', py: 1.5 }}>
+                  <Box sx={{ p: 1.5, bgcolor: '#f59e0b20', border: '1px solid #f59e0b40', borderRadius: 1, mb: 1 }}>
+                    <Typography variant="caption" sx={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.7rem' }}>Mark this order as delivered?</Typography>
+                    <Typography variant="caption" sx={{ color: muted, fontSize: '0.6rem', display: 'block' }}>This action will update the order status permanently.</Typography>
                   </Box>
                 </Box>
               )}
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ gap: 1, px: 3, pb: 2 }}>
-          <Button onClick={() => { setConfirmOpen(false); }} variant="outlined">
+        <DialogActions sx={{ gap: 1, px: 3, pb: 2, borderTop: `1px solid ${border}` }}>
+          <Button onClick={() => { setConfirmOpen(false); }} variant="outlined" sx={{ borderColor: border, color: muted, fontSize: '0.7rem' }}>
             {canMarkDelivered ? 'Cancel' : 'Close'}
           </Button>
           {canMarkDelivered && (
@@ -256,14 +264,16 @@ export default function QRScan() {
               color="success"
               onClick={handleMarkDelivered}
               disabled={marking}
-              startIcon={marking ? <Clock size={18} /> : <CheckCircle size={18} />}
+              size="small"
+              startIcon={marking ? <Clock size={14} /> : <CheckCircle size={14} />}
+              sx={{ fontSize: '0.7rem' }}
             >
               {marking ? 'Updating...' : 'Confirm Delivered'}
             </Button>
           )}
           <Tooltip title="Scan another order">
             <IconButton onClick={handleRescan} color="primary" size="small">
-              <RotateCcw size={18} />
+              <RotateCcw size={14} />
             </IconButton>
           </Tooltip>
         </DialogActions>
@@ -271,23 +281,23 @@ export default function QRScan() {
 
       {/* Scan History */}
       {scanHistory.length > 0 && (
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, fontWeight: 600 }}>
-            <History size={18} /> Recent Scans
+      <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+          <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <History size={14} /> Recent Scans
           </Typography>
           <List dense disablePadding>
             {scanHistory.map((entry, i) => (
-              <ListItem key={i} sx={{ px: 0, py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  <CheckCircle size={18} color="#16a34a" />
+              <ListItem key={i} sx={{ px: 0, py: 0.3 }}>
+                <ListItemIcon sx={{ minWidth: 28 }}>
+                  <CheckCircle size={14} color="#10b981" />
                 </ListItemIcon>
                 <ListItemText
                   primary={`${entry.id?.slice(0, 10)} — ${entry.customer || 'N/A'}`}
                   secondary={`${entry.origin?.split(',')[0] || ''} → ${entry.destination?.split(',')[0] || ''} · ${new Date(entry.timestamp).toLocaleTimeString()}`}
-                  primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
-                  secondaryTypographyProps={{ variant: 'caption' }}
+                  primaryTypographyProps={{ variant: 'body2', fontWeight: 600, sx: { color: text, fontSize: '0.75rem' } }}
+                  secondaryTypographyProps={{ variant: 'caption', sx: { color: muted, fontSize: '0.6rem' } }}
                 />
-                <Chip label="Delivered" size="small" color="success" sx={{ fontWeight: 600, height: 22, fontSize: '0.7rem' }} />
+                <Chip label="Delivered" size="small" color="success" sx={{ fontWeight: 600, height: 18, fontSize: '0.6rem' }} />
               </ListItem>
             ))}
           </List>

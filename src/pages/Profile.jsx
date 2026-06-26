@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { useThemeMode } from '../context/ThemeContext';
 import { updateUserProfile, saveAddress, fetchAddresses, deleteAddress as deleteAddressFirebase, addActivityLog } from '../firebase/services';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -17,6 +18,12 @@ import { Save, Plus, Trash2, MapPin, Bell, Mail, Phone, User } from 'lucide-reac
 
 export default function Profile() {
   const { user } = useAuth();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
+  const bg = isDark ? '#111827' : '#fff';
+  const border = isDark ? '#1f2937' : '#e2e8f0';
+  const text = isDark ? '#f3f4f6' : '#0f172a';
+  const muted = isDark ? '#6b7280' : '#64748b';
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState('');
   const [addresses, setAddresses] = useState([]);
@@ -53,37 +60,37 @@ export default function Profile() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h4">Profile & Settings</Typography>
+    <Box sx={{ maxWidth: 800, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 800, color: text, letterSpacing: '-0.02em' }}>Profile & Settings</Typography>
 
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 3 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: '1.5rem', fontWeight: 700 }}>{user?.name?.charAt(0)}</Avatar>
+      <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Avatar sx={{ width: 40, height: 40, bgcolor: 'hsl(8, 85%, 55%)', fontSize: '1rem', fontWeight: 700 }}>{user?.name?.charAt(0)}</Avatar>
           <Box>
-            <Typography variant="h6">{user?.name}</Typography>
-            <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
-            <Chip label={user?.role} size="small" color="primary" variant="outlined" sx={{ mt: 0.5, textTransform: 'capitalize' }} />
+            <Typography variant="body1" sx={{ color: text, fontWeight: 600, fontSize: '0.9rem' }}>{user?.name}</Typography>
+            <Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem' }}>{user?.email}</Typography>
+            <Chip label={user?.role} size="small" color="primary" variant="outlined" sx={{ mt: 0.3, fontSize: '0.6rem', height: 18, textTransform: 'capitalize' }} />
           </Box>
         </Box>
-        <Grid container spacing={2}>
+        <Grid container spacing={1.5}>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField label="Full Name" value={name} onChange={e => setName(e.target.value)} fullWidth size="small" />
+            <TextField label="Full Name" value={name} onChange={e => setName(e.target.value)} fullWidth size="small" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField label="Email" defaultValue={user?.email} disabled fullWidth size="small" />
+            <TextField label="Email" defaultValue={user?.email} disabled fullWidth size="small" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: muted } }} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField label="Phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+234 XXX XXX XXXX" fullWidth size="small" />
+            <TextField label="Phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+234 XXX XXX XXXX" fullWidth size="small" sx={{ '& .MuiInputLabel-root': { color: muted }, '& .MuiOutlinedInput-notchedOutline': { borderColor: border }, '& .MuiInputBase-input': { color: text } }} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'flex-end' }}>
-            <Button variant="contained" startIcon={<Save size={16} />} onClick={saveProfile}>Save Changes</Button>
+            <Button variant="contained" size="small" startIcon={<Save size={14} />} onClick={saveProfile} sx={{ fontSize: '0.75rem' }}>Save Changes</Button>
           </Grid>
         </Grid>
       </Paper>
 
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <MapPin size={20} /> Saved Addresses
+      <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+        <Typography variant="body2" sx={{ color: text, fontWeight: 600, fontSize: '0.75rem', mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <MapPin size={14} /> Saved Addresses
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
           {addresses.length === 0 && <Typography variant="body2" color="text.secondary">No saved addresses yet</Typography>}
@@ -105,9 +112,9 @@ export default function Profile() {
         </Grid>
       </Paper>
 
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Bell size={20} /> Preferences
+      <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+        <Typography variant="body2" sx={{ color: text, fontWeight: 600, fontSize: '0.75rem', mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Bell size={14} /> Preferences
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           <FormControlLabel control={<Checkbox defaultChecked />} label={<Typography variant="body2">Email notifications for status updates</Typography>} />

@@ -1,28 +1,30 @@
 # LogiMove - Logistics Platform
 
-A full-featured logistics management platform built with **React 19 + Vite 8 + MUI v9**, powered by **Firebase Auth & Firestore**.
+A full-featured logistics management platform built with **React 19 + Vite 8**, powered by **Firebase Auth, Firestore & Storage**.
 
 ## Features
 
 ### Core Pages
+- **Landing** — Hero image carousel, cinematic bg sections with parallax truck image, glassmorphism counters, red accent theme
 - **Login / Register / Forgot Password** — Firebase Auth with role-based routing (admin, driver, customer). Password strength meter on registration.
-- **Dashboard** — Admin overview with Recharts bar/pie charts, revenue stats, recent orders table.
-- **Shipment Booking** — Multi-step booking form.
-- **Package Tracking** — Leaflet map with real-time moving marker.
-- **Driver Assignment** — Drag-and-drop order assignment via `@dnd-kit`.
-- **Payments** — Paystack / Flutterwave / Debit Card / Cash options with card form validation.
-- **Notifications** — Notification feed with status badges.
+- **Dashboard** — Admin overview with AreaChart, fleet map (Leaflet), driver status panel, activity feed, recent orders
+- **Shipment Booking** — Multi-step booking form with cost estimation and ETA calculation
+- **Package Tracking** — Leaflet map with real-time moving marker
+- **Driver Assignment** — Drag-and-drop order assignment via `@dnd-kit`
+- **Payments** — Paystack / Flutterwave / Debit Card / Cash options with card form validation
+- **Notifications** — Notification feed with status badges
 
 ### Management Pages
-- **Driver Portal** — Assigned deliveries, status updates, GPS navigation, Proof of Delivery.
-- **Fleet Management** — Vehicle tracking, fuel logging, maintenance scheduling.
-- **Drivers** — Admin overview with ratings, earnings, performance.
-- **Warehouse Management** — CRUD warehouses with map visualization.
-- **Inventory Tracking** — Stock levels, low-stock alerts, restock actions.
-- **Reports** — Order stats, revenue breakdown, CSV export, activity log.
-- **Customer Support** — Live chat UI, contact cards, WhatsApp link.
-- **Profile** — User details, saved addresses, preferences, dark mode toggle.
-- **QR Scanner** — Camera-based QR scanning with test simulation.
+- **Driver Portal** — Assigned deliveries, status updates, GPS navigation, Proof of Delivery (POD)
+- **Fleet Management** — Vehicle tracking, fuel logging, maintenance scheduling, dispatch
+- **Drivers** — Admin overview with ratings, earnings, performance
+- **Warehouse Management** — CRUD warehouses with map visualization
+- **Inventory Tracking** — Stock levels, low-stock alerts, restock actions
+- **Reports** — Order stats, revenue breakdown, CSV export, activity log
+- **Customer Support** — Live chat UI, contact cards, WhatsApp link
+- **Profile** — User details, avatar upload (Firebase Storage), saved addresses, preferences
+- **QR Scanner** — Camera-based QR scanning with test simulation
+- **About** — Company story, milestones, team, with bg-fixed parallax truck background
 
 ### Nigerian Logistics
 - Paystack / Flutterwave payment stubs
@@ -39,24 +41,30 @@ A full-featured logistics management platform built with **React 19 + Vite 8 + M
 | Vite 8 | Build tool |
 | React 19 | UI framework |
 | React Router v7 | Client-side routing |
-| **MUI v9** | Component library |
-| **Emotion** | Styling engine |
-| **Firebase Auth** | Authentication |
-| **Firestore** | Database |
+| Firebase Auth | Authentication |
+| Firestore | Database |
+| Firebase Storage | Profile image uploads |
 | Leaflet + react-leaflet | Interactive maps |
-| Recharts | Charts (bar, pie, line) |
+| Recharts | Charts (AreaChart) |
 | @dnd-kit | Drag-and-drop |
 | react-hot-toast | Toast notifications |
 | html5-qrcode | QR scanning |
 | Zustand | State management |
 | Lucide React | Icons |
-| Netlify | Deployment |
+| MUI v9 | Select components only |
+
+## Theme
+
+- **Accent color**: Red (`hsl(8, 85%, 55%)`) — consistent across all pages
+- **Dark mode**: Full support with CSS custom properties
+- **Parallax backgrounds**: bg-fixed truck image on Landing (features/services/counters) and About sections
+- **Glassmorphism**: Counter section and dark-mode cards use backdrop-blur
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js 22+
-- A Firebase project with Auth (Email/Password) and Firestore enabled
+- A Firebase project with Auth (Email/Password), Firestore, and Storage enabled
 
 ### Setup
 
@@ -106,23 +114,23 @@ The email `bigsmart2026@gmail.com` is always treated as **admin** regardless of 
 src/
 ├── main.jsx                # Entry point (BrowserRouter + ThemeProvider)
 ├── App.jsx                 # Route definitions with lazy loading
-├── theme.js                # MUI theme (light/dark palette)
-├── index.css               # Global styles
+├── index.css               # Global styles + CSS custom properties
 ├── context/
 │   ├── AuthContext.jsx     # Firebase Auth provider
 │   └── ThemeContext.jsx    # Dark mode context (persisted)
 ├── firebase/
-│   ├── config.js           # Firebase init
-│   └── services.js         # Auth & Firestore operations
+│   ├── config.js           # Firebase init (auth, db, storage)
+│   └── services.js         # Auth, Firestore & Storage operations
 ├── store/
 │   └── authStore.js        # Zustand store (ready)
 ├── components/
 │   ├── Layout.jsx          # Sidebar + Navbar + Outlet
-│   ├── Navbar.jsx          # Top bar with theme toggle
-│   ├── Sidebar.jsx         # Responsive drawer (Lucide icons)
+│   ├── Navbar.jsx          # Top bar with theme toggle & profile dialog
+│   ├── Sidebar.jsx         # Collapsible sidebar (Lucide icons)
 │   ├── ProtectedRoute.jsx  # Auth guard with role check
-│   ├── MapContainer.jsx    # Leaflet map wrapper
-│   ├── StatCard.jsx        # MUI stat card
+│   ├── MapContainer.jsx    # Leaflet map wrapper (light tiles only)
+│   ├── FeatureCard.jsx     # Feature/service card with gradient icon
+│   ├── StatCard.jsx        # KPI stat card
 │   └── StatusBadge.jsx     # Status chip
 └── pages/                  # All page components (lazy loaded)
 ```

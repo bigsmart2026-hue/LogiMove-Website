@@ -1,10 +1,52 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useThemeMode } from '../context/ThemeContext';
 import { saveOrder, calculateCost, calculateETA, estimateDistance } from '../firebase/services';
+
+const ACCENT = 'hsl(8, 85%, 55%)';
+
+const inputBase = {
+  width: '100%',
+  padding: '7px 10px',
+  fontSize: '0.7rem',
+  fontFamily: '"Inter", sans-serif',
+  border: '1px solid var(--color-border)',
+  borderRadius: 6,
+  background: 'var(--color-bg-secondary)',
+  color: 'var(--color-text-primary)',
+  outline: 'none',
+  transition: 'border-color 150ms ease',
+};
+
+const btnPrimary = {
+  padding: '8px 16px',
+  fontSize: '0.7rem',
+  fontFamily: '"Lexend", sans-serif',
+  fontWeight: 600,
+  background: ACCENT,
+  color: '#fff',
+  border: 'none',
+  borderRadius: 6,
+  cursor: 'pointer',
+};
+
+const btnSecondary = {
+  padding: '8px 16px',
+  fontSize: '0.7rem',
+  fontFamily: '"Lexend", sans-serif',
+  fontWeight: 500,
+  background: 'transparent',
+  color: 'var(--color-text-secondary)',
+  border: '1px solid var(--color-border)',
+  borderRadius: 6,
+  cursor: 'pointer',
+};
 
 export default function Booking() {
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ senderName: '', senderEmail: '', senderPhone: '', recipientName: '', recipientPhone: '', origin: '', destination: '', weight: '', vehicleType: 'van', priority: 'standard', paymentMethod: 'card', cashOnDelivery: false, lagosTraffic: false, leaveAtDoor: false, description: '' });
 
@@ -19,91 +61,191 @@ export default function Booking() {
     navigate('/tracking');
   };
 
+  const stepCircle = (s) => ({
+    width: 24,
+    height: 24,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.65rem',
+    fontFamily: '"Lexend", sans-serif',
+    fontWeight: 600,
+    background: step >= s ? ACCENT : 'var(--color-bg-tertiary)',
+    color: step >= s ? '#fff' : 'var(--color-text-secondary)',
+  });
+
+  const stepLabel = (s) => ({
+    fontSize: '0.6rem',
+    fontFamily: '"Lexend", sans-serif',
+    fontWeight: step >= s ? 600 : 400,
+    color: step >= s ? ACCENT : 'var(--color-text-secondary)',
+  });
+
+  const stepLine = (s) => ({
+    width: 24,
+    height: 2,
+    background: step > s ? ACCENT : 'var(--color-border)',
+    borderRadius: 1,
+  });
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Book a Shipment</h1>
-      <div className="flex items-center gap-2 mb-6">
+    <div style={{ maxWidth: 640, margin: '0 auto' }}>
+      <h1 style={{ fontFamily: '"Lexend", sans-serif', fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16, letterSpacing: '-0.02em' }}>
+        Book a Shipment
+      </h1>
+
+      {/* Steps */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
         {[1, 2, 3].map(s => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= s ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>{s}</div>
-            <span className={`text-sm ${step >= s ? 'text-blue-600 font-medium' : 'text-gray-400'}`}>{s === 1 ? 'Details' : s === 2 ? 'Options' : 'Confirm'}</span>
-            {s < 3 && <div className={`w-8 h-0.5 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />}
+          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={stepCircle(s)}>{s}</div>
+            <span style={stepLabel(s)}>{s === 1 ? 'Details' : s === 2 ? 'Options' : 'Confirm'}</span>
+            {s < 3 && <div style={stepLine(s)} />}
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      {/* Card */}
+      <div style={{
+        background: 'var(--color-bg-secondary)',
+        borderRadius: 8,
+        border: '1px solid var(--color-border)',
+        boxShadow: 'var(--color-surface-highlight)',
+        padding: 16,
+      }}>
         {step === 1 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Sender & Recipient Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Sender Name</label><input type="text" value={form.senderName} onChange={e => update('senderName', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Sender Email</label><input type="email" value={form.senderEmail} onChange={e => update('senderEmail', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Sender Phone</label><input type="tel" value={form.senderPhone} onChange={e => update('senderPhone', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Recipient Name</label><input type="text" value={form.recipientName} onChange={e => update('recipientName', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Recipient Phone</label><input type="tel" value={form.recipientPhone} onChange={e => update('recipientPhone', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Origin</label><input type="text" value={form.origin} onChange={e => update('origin', e.target.value)} placeholder="e.g., Lagos, Nigeria" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Destination</label><input type="text" value={form.destination} onChange={e => update('destination', e.target.value)} placeholder="e.g., Abuja, Nigeria" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label><input type="number" value={form.weight} onChange={e => update('weight', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" /></div>
+          <div>
+            <h3 style={{ fontFamily: '"Lexend", sans-serif', fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>
+              Sender & Recipient Details
+            </h3>
+            <div className="booking-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div><label style={labelStyle}>Sender Name</label><input type="text" value={form.senderName} onChange={e => update('senderName', e.target.value)} style={inputBase} /></div>
+              <div><label style={labelStyle}>Sender Email</label><input type="email" value={form.senderEmail} onChange={e => update('senderEmail', e.target.value)} style={inputBase} /></div>
+              <div><label style={labelStyle}>Sender Phone</label><input type="tel" value={form.senderPhone} onChange={e => update('senderPhone', e.target.value)} style={inputBase} /></div>
+              <div><label style={labelStyle}>Recipient Name</label><input type="text" value={form.recipientName} onChange={e => update('recipientName', e.target.value)} style={inputBase} /></div>
+              <div><label style={labelStyle}>Recipient Phone</label><input type="tel" value={form.recipientPhone} onChange={e => update('recipientPhone', e.target.value)} style={inputBase} /></div>
+              <div><label style={labelStyle}>Origin</label><input type="text" value={form.origin} onChange={e => update('origin', e.target.value)} placeholder="e.g., Lagos, Nigeria" style={inputBase} /></div>
+              <div><label style={labelStyle}>Destination</label><input type="text" value={form.destination} onChange={e => update('destination', e.target.value)} placeholder="e.g., Abuja, Nigeria" style={inputBase} /></div>
+              <div><label style={labelStyle}>Weight (kg)</label><input type="number" value={form.weight} onChange={e => update('weight', e.target.value)} style={inputBase} /></div>
             </div>
-            <div className="flex justify-end mt-6"><button onClick={() => setStep(2)} className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Next</button></div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <button onClick={() => setStep(2)} style={btnPrimary}>Next</button>
+            </div>
           </div>
         )}
 
         {step === 2 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Delivery Options</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h3 style={{ fontFamily: '"Lexend", sans-serif', fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>
+              Delivery Options
+            </h3>
+            <div className="booking-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Type</label>
-                <select value={form.vehicleType} onChange={e => update('vehicleType', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <label style={labelStyle}>Vehicle Type</label>
+                <select value={form.vehicleType} onChange={e => update('vehicleType', e.target.value)} style={inputBase}>
                   <option value="bike">Bike (up to 50kg)</option>
                   <option value="van">Van (up to 1500kg)</option>
                   <option value="truck">Truck (up to 8000kg)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                <select value={form.priority} onChange={e => update('priority', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <label style={labelStyle}>Priority</label>
+                <select value={form.priority} onChange={e => update('priority', e.target.value)} style={inputBase}>
                   <option value="standard">Standard (3-5 days)</option>
                   <option value="express">Express (1-2 days)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                <select value={form.paymentMethod} onChange={e => update('paymentMethod', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <label style={labelStyle}>Payment Method</label>
+                <select value={form.paymentMethod} onChange={e => update('paymentMethod', e.target.value)} style={inputBase}>
                   <option value="card">Card (Paystack/Flutterwave)</option>
                   <option value="cash">Cash on Delivery</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Package Description</label>
-                <input type="text" value={form.description} onChange={e => update('description', e.target.value)} placeholder="e.g., Electronics, Documents" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                <label style={labelStyle}>Package Description</label>
+                <input type="text" value={form.description} onChange={e => update('description', e.target.value)} placeholder="e.g., Electronics, Documents" style={inputBase} />
               </div>
             </div>
-            <div className="space-y-2 mt-4">
-              <label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked={form.cashOnDelivery} onChange={e => update('cashOnDelivery', e.target.checked)} className="w-4 h-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">Cash on Delivery</span></label>
-              <label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked={form.lagosTraffic} onChange={e => update('lagosTraffic', e.target.checked)} className="w-4 h-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">Lagos Traffic (+30% ETA)</span></label>
-              <label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked={form.leaveAtDoor} onChange={e => update('leaveAtDoor', e.target.checked)} className="w-4 h-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">Leave at Door</span></label>
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={checkLabel}><input type="checkbox" checked={form.cashOnDelivery} onChange={e => update('cashOnDelivery', e.target.checked)} style={checkStyle} /><span style={checkText}>Cash on Delivery</span></label>
+              <label style={checkLabel}><input type="checkbox" checked={form.lagosTraffic} onChange={e => update('lagosTraffic', e.target.checked)} style={checkStyle} /><span style={checkText}>Lagos Traffic (+30% ETA)</span></label>
+              <label style={checkLabel}><input type="checkbox" checked={form.leaveAtDoor} onChange={e => update('leaveAtDoor', e.target.checked)} style={checkStyle} /><span style={checkText}>Leave at Door</span></label>
             </div>
-            <div className="flex justify-between mt-6"><button onClick={() => setStep(1)} className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50">Back</button><button onClick={() => setStep(3)} className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Review</button></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+              <button onClick={() => setStep(1)} style={btnSecondary}>Back</button>
+              <button onClick={() => setStep(3)} style={btnPrimary}>Review</button>
+            </div>
           </div>
         )}
 
         {step === 3 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Confirm Booking</h3>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-3"><span className="text-gray-500">Sender:</span><span className="font-medium">{form.senderName || 'N/A'}</span><span className="text-gray-500">Recipient:</span><span className="font-medium">{form.recipientName || 'N/A'}</span><span className="text-gray-500">Route:</span><span className="font-medium">{form.origin || 'N/A'} → {form.destination || 'N/A'}</span><span className="text-gray-500">Weight:</span><span className="font-medium">{form.weight || 'N/A'} kg</span><span className="text-gray-500">Vehicle:</span><span className="font-medium capitalize">{form.vehicleType}</span><span className="text-gray-500">Payment:</span><span className="font-medium">{form.paymentMethod === 'card' ? 'Card' : 'Cash on Delivery'}</span></div>
-              <div className="border-t border-gray-200 pt-3 mt-3">
-                <span className="text-gray-500">Estimated Cost:</span>
-                <span className="text-xl font-bold text-blue-600 ml-2">₦{calculateCost(Number(form.weight) || 5, estimateDistance(6.5244, 3.3792, 9.0765, 7.3986), form.vehicleType).toLocaleString()}</span>
+          <div>
+            <h3 style={{ fontFamily: '"Lexend", sans-serif', fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>
+              Confirm Booking
+            </h3>
+            <div style={{
+              background: 'var(--color-bg-tertiary)',
+              borderRadius: 8,
+              padding: 12,
+            }}>
+              <div className="booking-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', fontSize: '0.65rem' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Sender:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{form.senderName || 'N/A'}</span>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Recipient:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{form.recipientName || 'N/A'}</span>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Route:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{form.origin || 'N/A'} → {form.destination || 'N/A'}</span>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Weight:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{form.weight || 'N/A'} kg</span>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Vehicle:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, textTransform: 'capitalize' }}>{form.vehicleType}</span>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Payment:</span>
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{form.paymentMethod === 'card' ? 'Card' : 'Cash on Delivery'}</span>
+              </div>
+              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 8, marginTop: 8, display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Estimated Cost:</span>
+                <span style={{ fontSize: '1rem', fontWeight: 700, color: ACCENT }}>
+                  ₦{calculateCost(Number(form.weight) || 5, estimateDistance(6.5244, 3.3792, 9.0765, 7.3986), form.vehicleType).toLocaleString()}
+                </span>
               </div>
             </div>
-            <div className="flex justify-between mt-6"><button onClick={() => setStep(2)} className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50">Back</button><button onClick={handleSubmit} className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">Confirm & Book</button></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+              <button onClick={() => setStep(2)} style={btnSecondary}>Back</button>
+              <button onClick={handleSubmit} style={{ ...btnPrimary, background: 'var(--color-accent-clear)' }}>Confirm & Book</button>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 }
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '0.6rem',
+  fontFamily: '"Inter", sans-serif',
+  fontWeight: 500,
+  color: 'var(--color-text-secondary)',
+  marginBottom: 3,
+};
+
+const checkLabel = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  cursor: 'pointer',
+};
+
+const checkStyle = {
+  width: 13,
+  height: 13,
+  accentColor: 'hsl(8, 85%, 55%)',
+};
+
+const checkText = {
+  fontSize: '0.65rem',
+  fontFamily: '"Inter", sans-serif',
+  color: 'var(--color-text-secondary)',
+};

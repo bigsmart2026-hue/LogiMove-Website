@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useThemeMode } from '../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -15,6 +16,8 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
   const { forgotPassword } = useAuth();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +35,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
       <Paper sx={{ p: 4, width: '100%', maxWidth: 440, borderRadius: 4 }} elevation={8}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h4" sx={{ color: 'primary.main', fontWeight: 800 }}>LogiMove</Typography>
@@ -65,7 +68,7 @@ export default function ForgotPassword() {
         )}
 
         <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
-          <Link to="/login" style={{ color: '#2563eb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <Link to="/login" style={{ color: 'hsl(8, 85%, 55%)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <ArrowLeft size={16} /> Back to Sign In
           </Link>
         </Typography>

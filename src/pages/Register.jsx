@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useThemeMode } from '../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -35,6 +36,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const { register, user } = useAuth();
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
@@ -59,7 +62,7 @@ export default function Register() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
       <Paper sx={{ p: 4, width: '100%', maxWidth: 440, borderRadius: 4 }} elevation={8}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h4" sx={{ color: 'primary.main', fontWeight: 800 }}>LogiMove</Typography>
@@ -113,7 +116,7 @@ export default function Register() {
                       flex: 1,
                       height: 6,
                       borderRadius: 3,
-                      bgcolor: 'grey.200',
+                      bgcolor: isDark ? '#334155' : 'grey.200',
                       '& .MuiLinearProgress-bar': { bgcolor: strength.color, borderRadius: 3, transition: 'all 0.3s' },
                     }}
                   />
@@ -141,7 +144,7 @@ export default function Register() {
         </Box>
         <Typography variant="body2" sx={{ textAlign: 'center', mt: 3, color: 'text.secondary' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+          <Link to="/login" style={{ color: 'hsl(8, 85%, 55%)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
         </Typography>
       </Paper>
     </Box>

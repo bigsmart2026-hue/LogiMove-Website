@@ -12,7 +12,7 @@ const BikeSVGs = [
     <line x1="50" y1="38" x2="70" y2="28" stroke="#334155" strokeWidth="2" />
     <line x1="60" y1="18" x2="60" y2="48" stroke="#334155" strokeWidth="3" />
     <line x1="60" y1="18" x2="55" y2="12" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
-    <rect x="55" y="8" width="10" height="6" rx="2" fill="#3b82f6" />
+    <rect x="55" y="8" width="10" height="6" rx="2" fill="hsl(8, 85%, 55%)" />
     <circle cx="96" cy="48" r="3" fill="#ef4444" />
     <rect x="96" y="46" width="8" height="8" rx="1" fill="#f59e0b" opacity="0.8" />
   </svg>,
@@ -27,7 +27,7 @@ const BikeSVGs = [
     <line x1="55" y1="15" x2="55" y2="47" stroke="#334155" strokeWidth="2.5" />
     <line x1="55" y1="15" x2="52" y2="10" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
     <rect x="50" y="6" width="10" height="5" rx="2" fill="#10b981" />
-    <rect x="84" y="44" width="14" height="10" rx="2" fill="#3b82f6" opacity="0.9" />
+    <rect x="84" y="44" width="14" height="10" rx="2" fill="hsl(8, 85%, 55%)" opacity="0.9" />
     <text x="87" y="52" fill="white" fontSize="6" fontWeight="bold">LOG</text>
   </svg>,
   <svg viewBox="0 0 120 80" width="120" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,9 +48,9 @@ const BikeSVGs = [
 
 const CarSVGs = [
   <svg viewBox="0 0 160 90" width="160" height="90" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 62c0-8.8 7.2-16 16-16h2l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12h2c8.8 0 16 7.2 16 16v10c0 5-4 9-9 9H29c-5 0-9-4-9-9v-10z" fill="#2563eb" />
-    <path d="M42 46l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12H42z" fill="#1d4ed8" opacity="0.6" />
-    <rect x="35" y="42" width="90" height="14" rx="3" fill="#3b82f6" opacity="0.4" />
+    <path d="M20 62c0-8.8 7.2-16 16-16h2l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12h2c8.8 0 16 7.2 16 16v10c0 5-4 9-9 9H29c-5 0-9-4-9-9v-10z" fill="hsl(8, 85%, 55%)" />
+    <path d="M42 46l4-12c2-6 8-10 14-10h48c6 0 12 4 14 10l4 12H42z" fill="hsl(8, 85%, 48%)" opacity="0.6" />
+    <rect x="35" y="42" width="90" height="14" rx="3" fill="hsl(8, 85%, 55%)" opacity="0.4" />
     <circle cx="46" cy="66" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2" />
     <circle cx="46" cy="66" r="6" fill="#64748b" />
     <circle cx="114" cy="66" r="14" fill="#1e293b" stroke="#334155" strokeWidth="2" />

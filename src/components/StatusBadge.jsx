@@ -1,22 +1,25 @@
-import Chip from '@mui/material/Chip';
+import { Circle } from 'lucide-react';
 
-const statusColors = {
-  pending: 'warning',
-  'picked-up': 'info',
-  assigned: 'secondary',
-  'in-transit': 'secondary',
-  delivered: 'success',
-  cancelled: 'error',
+const statusConfig = {
+  delivered: { cssClass: 'status-pill--clear', label: 'Delivered' },
+  cleared: { cssClass: 'status-pill--clear', label: 'Cleared' },
+  'picked-up': { cssClass: 'status-pill--primary', label: 'Picked Up' },
+  assigned: { cssClass: 'status-pill--primary', label: 'Assigned' },
+  'in-transit': { cssClass: 'status-pill--amber', label: 'In Transit' },
+  pending: { cssClass: 'status-pill--amber', label: 'Pending' },
+  delayed: { cssClass: 'status-pill--amber', label: 'Delayed' },
+  exception: { cssClass: 'status-pill--red', label: 'Exception' },
+  cancelled: { cssClass: 'status-pill--red', label: 'Cancelled' },
+  hold: { cssClass: 'status-pill--red', label: 'On Hold' },
 };
 
 export default function StatusBadge({ status }) {
+  const config = statusConfig[status] || { cssClass: 'status-pill--muted', label: status || 'Unknown' };
+
   return (
-    <Chip
-      label={status?.replace('-', ' ')}
-      size="small"
-      color={statusColors[status] || 'default'}
-      variant="filled"
-      sx={{ fontWeight: 600, textTransform: 'capitalize' }}
-    />
+    <span className={`status-pill ${config.cssClass}`}>
+      <Circle />
+      {config.label}
+    </span>
   );
 }

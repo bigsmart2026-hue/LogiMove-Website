@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useThemeMode } from '../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -20,6 +21,8 @@ export default function Login() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { login, googleLogin, user } = useAuth();
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   useEffect(() => {
     if (!user) return;
@@ -52,7 +55,7 @@ export default function Login() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)', p: 2 }}>
       <Paper sx={{ p: 4, width: '100%', maxWidth: 440, borderRadius: 4 }} elevation={8}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h4" sx={{ color: 'primary.main', fontWeight: 800 }}>LogiMove</Typography>
@@ -89,7 +92,7 @@ export default function Login() {
           />
           {error && <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: '#2563eb', textDecoration: 'none' }}>Forgot password?</Link>
+            <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: 'hsl(8, 85%, 55%)', textDecoration: 'none' }}>Forgot password?</Link>
           </Box>
           <Button type="submit" variant="contained" size="large" startIcon={<LogIn size={20} />} fullWidth>Sign In</Button>
         </Box>
@@ -119,7 +122,7 @@ export default function Login() {
 
         <Typography variant="body2" sx={{ textAlign: 'center', mt: 3, color: 'text.secondary' }}>
           Don't have an account?{' '}
-          <Link to="/register" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
+          <Link to="/register" style={{ color: 'hsl(8, 85%, 55%)', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
         </Typography>
       </Paper>
     </Box>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { fetchOrders } from '../firebase/services';
+import { useThemeMode } from '../context/ThemeContext';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -16,6 +17,12 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { Download, Package, CheckCircle, Truck, DollarSign } from 'lucide-react';
 
 export default function Reports() {
+  const { mode } = useThemeMode();
+  const isDark = mode === 'dark';
+  const bg = isDark ? '#111827' : '#fff';
+  const border = isDark ? '#1f2937' : '#e2e8f0';
+  const text = isDark ? '#f3f4f6' : '#0f172a';
+  const muted = isDark ? '#6b7280' : '#64748b';
   const [orders, setOrders] = useState([]);
 
   useEffect(() => { fetchOrders().then(setOrders); }, []);
@@ -43,57 +50,57 @@ export default function Reports() {
   const total = orders.length || 1;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="h4">Reports</Typography>
-        <Button variant="contained" startIcon={<Download size={18} />} onClick={handleExport}>Export CSV</Button>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: text, letterSpacing: '-0.02em' }}>Reports</Typography>
+        <Button variant="contained" size="small" startIcon={<Download size={14} />} onClick={handleExport} sx={{ fontSize: '0.75rem' }}>Export CSV</Button>
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Total Orders</Typography><Typography variant="h4">{orders.length}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Completed</Typography><Typography variant="h4" sx={{ color: 'success.main' }}>{completed}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>In Transit</Typography><Typography variant="h4" sx={{ color: 'secondary.main' }}>{inTransit}</Typography></Paper></Grid>
-        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2.5 }}><Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Revenue</Typography><Typography variant="h4" sx={{ color: 'primary.main' }}>₦{totalRevenue.toLocaleString()}</Typography></Paper></Grid>
+      <Grid container spacing={1.5}>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Orders</Typography><Typography variant="body1" sx={{ color: text, fontWeight: 700, fontSize: '1.1rem', mt: 0.3 }}>{orders.length}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Completed</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: '#10b981' }}>{completed}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>In Transit</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: '#8b5cf6' }}>{inTransit}</Typography></Paper></Grid>
+        <Grid size={{ xs: 6, sm: 3 }}><Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}><Typography variant="caption" sx={{ color: muted, fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Revenue</Typography><Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', mt: 0.3, color: 'hsl(8, 85%, 55%)' }}>₦{totalRevenue.toLocaleString()}</Typography></Paper></Grid>
       </Grid>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={1.5}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Order Summary</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}><Typography variant="body2">Pending</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{pending}</Typography></Box><LinearProgress variant="determinate" value={(pending / total) * 100} sx={{ height: 8, borderRadius: 4, bgcolor: 'grey.200', '& .MuiLinearProgress-bar': { bgcolor: 'warning.main', borderRadius: 4 } }} /></Box>
-              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}><Typography variant="body2">In Transit</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{inTransit}</Typography></Box><LinearProgress variant="determinate" value={(inTransit / total) * 100} sx={{ height: 8, borderRadius: 4, bgcolor: 'grey.200', '& .MuiLinearProgress-bar': { bgcolor: 'secondary.main', borderRadius: 4 } }} /></Box>
-              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}><Typography variant="body2">Delivered</Typography><Typography variant="body2" sx={{ fontWeight: 600 }}>{completed}</Typography></Box><LinearProgress variant="determinate" value={(completed / total) * 100} sx={{ height: 8, borderRadius: 4, bgcolor: 'grey.200', '& .MuiLinearProgress-bar': { bgcolor: 'success.main', borderRadius: 4 } }} /></Box>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Revenue Breakdown</Typography>
+          <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+            <Typography variant="caption" sx={{ color: muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>Order Summary</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid', borderColor: 'divider', pb: 1 }}>
-                <Typography variant="body2">Card Payments</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>₦{orders.filter(o => o.paymentMethod === 'card' && o.paymentStatus === 'paid').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
+              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.3 }}><Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.75rem' }}>Pending</Typography><Typography variant="body2" sx={{ fontWeight: 600, color: text, fontSize: '0.75rem' }}>{pending}</Typography></Box><LinearProgress variant="determinate" value={(pending / total) * 100} sx={{ height: 4, borderRadius: 2, bgcolor: border, '& .MuiLinearProgress-bar': { bgcolor: '#f59e0b', borderRadius: 2 } }} /></Box>
+              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.3 }}><Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.75rem' }}>In Transit</Typography><Typography variant="body2" sx={{ fontWeight: 600, color: text, fontSize: '0.75rem' }}>{inTransit}</Typography></Box><LinearProgress variant="determinate" value={(inTransit / total) * 100} sx={{ height: 4, borderRadius: 2, bgcolor: border, '& .MuiLinearProgress-bar': { bgcolor: '#8b5cf6', borderRadius: 2 } }} /></Box>
+              <Box><Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.3 }}><Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.75rem' }}>Delivered</Typography><Typography variant="body2" sx={{ fontWeight: 600, color: text, fontSize: '0.75rem' }}>{completed}</Typography></Box><LinearProgress variant="determinate" value={(completed / total) * 100} sx={{ height: 4, borderRadius: 2, bgcolor: border, '& .MuiLinearProgress-bar': { bgcolor: '#10b981', borderRadius: 2 } }} /></Box>
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}` }}>
+            <Typography variant="caption" sx={{ color: muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>Revenue Breakdown</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${border}`, pb: 0.8 }}>
+                <Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.7rem' }}>Card Payments</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: text, fontSize: '0.7rem' }}>₦{orders.filter(o => o.paymentMethod === 'card' && o.paymentStatus === 'paid').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid', borderColor: 'divider', pb: 1 }}>
-                <Typography variant="body2">Cash on Delivery</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>₦{orders.filter(o => o.paymentMethod === 'cash' && o.paymentStatus === 'paid').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${border}`, pb: 0.8 }}>
+                <Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.7rem' }}>Cash on Delivery</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: text, fontSize: '0.7rem' }}>₦{orders.filter(o => o.paymentMethod === 'cash' && o.paymentStatus === 'paid').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid', borderColor: 'divider', pb: 1 }}>
-                <Typography variant="body2">Pending</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: 'warning.main' }}>₦{orders.filter(o => o.paymentStatus === 'pending').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${border}`, pb: 0.8 }}>
+                <Typography variant="body2" sx={{ color: isDark ? '#d1d5db' : '#64748b', fontSize: '0.7rem' }}>Pending</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#f59e0b', fontSize: '0.7rem' }}>₦{orders.filter(o => o.paymentStatus === 'pending').reduce((s, o) => s + o.cost, 0).toLocaleString()}</Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Total</Typography>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>₦{totalRevenue.toLocaleString()}</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: text, fontSize: '0.75rem' }}>Total</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: 'hsl(8, 85%, 55%)', fontSize: '0.75rem' }}>₦{totalRevenue.toLocaleString()}</Typography>
               </Box>
             </Box>
           </Paper>
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>Activity Log</Typography>
+      <Paper sx={{ p: 2, bgcolor: bg, border: `1px solid ${border}`, overflow: 'hidden' }}>
+        <Typography variant="caption" sx={{ color: muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Activity Log</Typography>
         <TableContainer>
           <Table size="small">
             <TableHead>

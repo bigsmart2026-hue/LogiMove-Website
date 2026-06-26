@@ -414,21 +414,6 @@ export default function Dashboard() {
       </div>
     </div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .dash-grid-main {
-            grid-template-columns: 1fr !important;
-          }
-          .dash-grid-bottom {
-            grid-template-columns: 1fr !important;
-          }
-        }
-        @media (min-width: 901px) and (max-width: 1200px) {
-          .dash-grid-bottom {
-            grid-template-columns: 1fr 1fr !important;
-          }
-        }
-      `}</style>
     </>
   );
 }

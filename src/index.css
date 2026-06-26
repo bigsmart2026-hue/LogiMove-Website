@@ -687,6 +687,18 @@ body::after {
   to { transform: rotate(360deg); }
 }
 
+/* Grid blowout fix — prevent card overlapping */
+.dash-grid-main,
+.dash-grid-bottom,
+.booking-grid {
+  min-width: 0;
+}
+.dash-grid-main > *,
+.dash-grid-bottom > * {
+  min-width: 0;
+  overflow: hidden;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .layout-main {

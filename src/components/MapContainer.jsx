@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapPin } from 'lucide-react';
 
-export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, markers = [], polyline, className = 'h-80 w-full rounded-lg' }) {
+export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, markers = [], polyline, className = 'h-80 w-full rounded-lg', style }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef([]);
@@ -88,7 +88,7 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
   const warningCount = markers.filter(m => m.color === '#f59e0b' || m.color === 'hsl(38, 92%, 50%)').length;
 
   return (
-    <div style={{ position: 'relative', background: 'var(--color-bg-secondary)', minHeight: 280, height: '100%' }}>
+    <div style={{ position: 'relative', background: 'var(--color-bg-secondary)', minHeight: 280, height: '100%', ...style }}>
       {/* Map container */}
       <div ref={mapRef} className={className} style={{ height: '100%', minHeight: 280 }} />
 

@@ -145,7 +145,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content: Map + Drivers */}
-      <div className="dash-grid-main" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 12, minHeight: 320 }}>
+      <div className="dash-grid-main" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gridTemplateRows: '1fr', gap: 12, minHeight: 0, height: 420 }}>
         {/* Fleet Map */}
         <div style={{
           background: 'var(--color-bg-secondary)',
@@ -155,6 +155,7 @@ export default function Dashboard() {
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
+          minHeight: 0,
         }}>
           {/* Map Header */}
           <div style={{

@@ -28,6 +28,12 @@ export default function MapContainer({ center = [6.5244, 3.3792], zoom = 6, mark
     import('leaflet/dist/leaflet.css').then(() => import('leaflet')).then((L) => {
       if (cleanup || mapInstance.current) return;
       clearTimeout(timeout);
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      });
       const map = L.map(mapRef.current, { zoomControl: true }).setView(center, zoom);
       L.tileLayer(tileUrl, { attribution: tileAttr, maxZoom: 19 }).addTo(map);
       mapInstance.current = map;

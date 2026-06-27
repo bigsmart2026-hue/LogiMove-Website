@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchOrders, generateRoute, subscribeToOrder, subscribeToDriverLocation } from '../firebase/services';
-import MapContainer from '../components/MapContainer';
+import MapLibreMap from '../components/MapLibreMap';
 import StatusBadge from '../components/StatusBadge';
 
 export default function Tracking() {
@@ -109,7 +109,7 @@ export default function Tracking() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-sm">
-            <MapContainer center={selectedOrder ? [selectedOrder.coordinates.lat, selectedOrder.coordinates.lng] : [6.5244, 3.3792]} zoom={selectedOrder ? 6 : 6} markers={mapMarkers} polyline={route} className="h-72 w-full rounded-lg" />
+            <MapLibreMap center={selectedOrder ? [selectedOrder.coordinates.lat, selectedOrder.coordinates.lng] : [6.5244, 3.3792]} zoom={selectedOrder ? 6 : 6} markers={mapMarkers} polyline={route} className="h-72 w-full rounded-lg" />
           </div>
         </div>
         <div className="space-y-3">

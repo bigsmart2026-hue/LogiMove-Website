@@ -3,7 +3,7 @@ import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, A
 import { fetchDrivers, subscribeToAllOrders } from '../firebase/services';
 import { useThemeMode } from '../context/ThemeContext';
 import StatusBadge from '../components/StatusBadge';
-import MapContainer from '../components/MapContainer';
+import MapLibreMap from '../components/MapLibreMap';
 import { Package, CreditCard, Truck, TrendingUp, Users, Clock, MapPin, ArrowUpRight, ArrowDownRight, Circle } from 'lucide-react';
 
 const weeklyData = [
@@ -181,7 +181,7 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-          <MapContainer
+          <MapLibreMap
             center={[9.082, 8.6753]}
             zoom={6}
             markers={mapMarkers}

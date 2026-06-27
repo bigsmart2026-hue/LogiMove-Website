@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { fetchWarehouses, addWarehouse, fetchInventory, updateInventoryItem, addActivityLog } from '../firebase/services';
-import MapContainer from '../components/MapContainer';
+import MapLibreMap from '../components/MapLibreMap';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -105,7 +105,7 @@ export default function WarehouseManagement() {
                 <Typography variant="caption" sx={{ color: muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <MapPin size={14} /> Warehouse Map
                 </Typography>
-                <MapContainer center={[7.5, 5.0]} zoom={6} markers={mapMarkers} className="h-64 w-full rounded-lg" />
+                <MapLibreMap center={[7.5, 5.0]} zoom={6} markers={mapMarkers} className="h-64 w-full rounded-lg" />
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, lg: 6 }}>

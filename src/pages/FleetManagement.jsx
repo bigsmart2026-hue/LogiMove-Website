@@ -4,7 +4,7 @@ import {
   addActivityLog, addDriver,
 } from '../firebase/services';
 import { useThemeMode } from '../context/ThemeContext';
-import MapContainer from '../components/MapContainer';
+import MapLibreMap from '../components/MapLibreMap';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -258,7 +258,7 @@ export default function FleetManagement() {
               <Chip icon={<Map size={12} />} label={`${mapMarkers.length} assets`} size="small"
                 sx={{ bgcolor: border, color: muted, fontSize: '0.6rem', height: 22 }} />
             </Box>
-            <MapContainer center={[9.082, 8.6753]} zoom={6} markers={mapMarkers} className="h-72 md:h-96 w-full rounded-lg" />
+            <MapLibreMap center={[9.082, 8.6753]} zoom={6} markers={mapMarkers} className="h-72 md:h-96 w-full rounded-lg" />
           </Paper>
         </Grid>
 
